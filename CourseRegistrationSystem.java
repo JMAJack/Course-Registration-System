@@ -1,8 +1,18 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class CourseRegistrationSystem {
+    private static List<Student> students = new ArrayList<>();
+    private static List<Admin> admins = new ArrayList<>();
 
     public static void main(String[] args) {
+        // Adding some dummy data
+        students.add(new Student("12345", "John Doe"));
+        students.add(new Student("67890", "Jane Smith"));
+
+        admins.add(new Admin("admin", "Admin User"));
+
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("\n--- Course Registration System ---");
@@ -36,11 +46,11 @@ public class CourseRegistrationSystem {
         // For debugging
         System.out.println("\n\t[DEBUG] Student ID entered: " + studentId);
 
-        // Implement further student login logic here
-        // For now, let's simulate a simple validation
-        if (studentId.equals("12345")) {
-            System.out.println("\tWelcome, Student " + studentId);
-            studentMenu(scanner);
+        // Validate student ID
+        Student student = findStudentById(studentId);
+        if (student != null) {
+            System.out.println("\tWelcome, " + student.getName());
+            studentMenu(scanner, student);
         } else {
             System.out.println("\tInvalid Student ID. Please try again.");
         }
@@ -52,17 +62,17 @@ public class CourseRegistrationSystem {
         // For debugging
         System.out.println("\n\t[DEBUG] Admin ID entered: " + adminId);
 
-        // Implement further admin login logic here
-        // For now, let's simulate a simple validation
-        if (adminId.equals("admin")) {
-            System.out.printf("\n\t*Welcome, Admin %s!\n", adminId);
+        // Validate admin ID
+        Admin admin = findAdminById(adminId);
+        if (admin != null) {
+            System.out.printf("\n\t*Welcome, Admin %s!\n", admin.getName());
             adminMenu(scanner);
         } else {
             System.out.println("\n\tInvalid Admin ID. Please try again.");
         }
     }
 
-    private static void studentMenu(Scanner scanner) {
+    private static void studentMenu(Scanner scanner, Student student) {
         while (true) {
             System.out.println("\n--- Student Menu ---");
             System.out.println("\t1. View Available Courses");
@@ -79,13 +89,13 @@ public class CourseRegistrationSystem {
                     viewAvailableCourses();
                     break;
                 case "2":
-                    registerForCourse(scanner);
+                    registerForCourse(scanner, student);
                     break;
                 case "3":
-                    viewEnrolledCourses();
+                    viewEnrolledCourses(student);
                     break;
                 case "4":
-                    undoLastRegistration();
+                    undoLastRegistration(student);
                     break;
                 case "5":
                     System.out.println("Logging out...");
@@ -130,38 +140,43 @@ public class CourseRegistrationSystem {
         }
     }
 
-    // Placeholder methods for student functionalities
+    // Methods to handle student functionalities
     private static void viewAvailableCourses() {
         System.out.println("[DEBUG] Displaying available courses...");
         // Add logic to display available courses
     }
 
-    private static void registerForCourse(Scanner scanner) {
+    private static void registerForCourse(Scanner scanner, Student student) {
         System.out.print("Enter Course Code to register: ");
         String courseCode = scanner.nextLine();
-        System.out.println("\n\t[DEBUG] Registering for course: " + courseCode);
-        // Add logic to register for a course
+        System.out.println("[DEBUG] Registering for course: " + courseCode);
+        student.enrollCourse(courseCode);
+        System.out.printf("Successfully registered for course: %s\n", courseCode);
+        // Add further logic to handle course prerequisites and capacity
     }
 
-    private static void viewEnrolledCourses() {
-        System.out.println("[DEBUG] Displaying enrolled courses...");
-        // Add logic to display enrolled courses
+    private static void viewEnrolledCourses(Student student) {
+        System.out.println("[DEBUG] Displaying enrolled courses for " + student.getName());
+        List<String> courses = student.getEnrolledCourses();
+        for (String course : courses) {
+            System.out.println(course);
+        }
     }
 
-    private static void undoLastRegistration() {
+    private static void undoLastRegistration(Student student) {
         System.out.println("[DEBUG] Undoing last registration...");
         // Add logic to undo last registration
     }
 
-    // Placeholder methods for admin functionalities
+    // Methods to handle admin functionalities
     private static void manageStudents(Scanner scanner) {
         System.out.println("[DEBUG] Managing students...");
-        // Add logic to manage students
+        // Add logic to manage students (add, remove, modify)
     }
 
     private static void manageCourses(Scanner scanner) {
         System.out.println("[DEBUG] Managing courses...");
-        // Add logic to manage courses
+        // Add logic to manage courses (add, remove, modify)
     }
 
     private static void generateReports() {
@@ -170,12 +185,31 @@ public class CourseRegistrationSystem {
     }
 
     private static void updateCourseCapacities(Scanner scanner) {
-        System.out.print("\n\tEnter Course Code to update capacity: ");
+        System.out.print("Enter Course Code to update capacity: ");
         String courseCode = scanner.nextLine();
-        System.out.print("\tEnter new maximum capacity: ");
+        System.out.print("Enter new maximum capacity: ");
         int maxCapacity = scanner.nextInt();
         scanner.nextLine();  // Consume newline
-        System.out.println("\n\t[DEBUG] Updating capacity for course: " + courseCode + " to " + maxCapacity);
+        System.out.println("[DEBUG] Updating capacity for course: " + courseCode + " to " + maxCapacity);
         // Add logic to update course capacities
+    }
+
+    // Utility methods to find Student and Admin by ID
+    private static Student findStudentById(String id) {
+        for (Student student : students) {
+            if (student.getId().equals(id)) {
+                return student;
+            }
+        }
+        return null;
+    }
+
+    private static Admin findAdminById(String id) {
+        for (Admin admin : admins) {
+            if (admin.getAdminId().equals(id)) {
+                return admin;
+            }
+        }
+        return null;
     }
 }
