@@ -1,43 +1,47 @@
-import java.util.ArrayList;
-import java.util.List;
+#include <iostream>
+#include <vector>
+#include <string>
 
-public class Student {
-    private String id;
-    private String name;
-    private List<String> enrolledCourses;
+using namespace std;
 
-    public Student(String id, String name) {
-        this.id = id;
-        this.name = name;
-        this.enrolledCourses = new ArrayList<>();
+class Student {
+private:
+    string id;
+    string name;
+    vector<string> enrolledCourses;
+
+public:
+    Student(string studentId, string studentName) {
+        id = studentId;
+        name = studentName;
     }
 
-    public String getId() {
+    string GetId() {
         return id;
     }
 
-    public String getName() {
+    string GetName() {
         return name;
     }
 
-    public List<String> getEnrolledCourses() {
+    vector<string> GetEnrolledCourses() {
         return enrolledCourses;
     }
 
-    public void enrollCourse(String courseCode) {
-        enrolledCourses.add(courseCode);
+    void EnrollCourse(string courseCode) {
+        enrolledCourses.push_back(courseCode);
     }
 
-    public void dropCourse(String courseCode) {
-        enrolledCourses.remove(courseCode);
+    void DropCourse(string courseCode) {
+        enrolledCourses.erase(remove(enrolledCourses.begin(), enrolledCourses.end(), courseCode), enrolledCourses.end());
     }
 
-    @Override
-    public String toString() {
-        return "Student{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", enrolledCourses=" + enrolledCourses +
-                '}';
+    string ToString() {
+        string result = "Student{id='" + id + "', name='" + name + "', enrolledCourses=[";
+        for (const auto& course : enrolledCourses) {
+            result += course + ", ";
+        }
+        result += "]}";
+        return result;
     }
-}
+};
