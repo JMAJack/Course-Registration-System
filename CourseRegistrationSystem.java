@@ -1,215 +1,127 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+#include <iostream>
+#include <vector>
+#include <string>
 
-public class CourseRegistrationSystem {
-    private static List<Student> students = new ArrayList<>();
-    private static List<Admin> admins = new ArrayList<>();
+using namespace std;
 
-    public static void main(String[] args) {
-        // Adding some dummy data
-        students.add(new Student("12345", "John Doe"));
-        students.add(new Student("67890", "Jane Smith"));
+class Student {
+public:
+    string id;
+    string name;
+    vector<string> enrolledCourses;
 
-        admins.add(new Admin("admin", "Admin User"));
+    Student(string studentId, string studentName) {
+        id = studentId;
+        name = studentName;
+    }
 
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            System.out.println("\n--- Course Registration System ---");
-            System.out.println("\t1. Student Login");
-            System.out.println("\t2. Admin Login");
-            System.out.println("\t3. Exit");
+    void EnrollCourse(string courseCode) {
+        enrolledCourses.push_back(courseCode);
+    }
 
-            System.out.print("Choose an option: ");
-            String choice = scanner.nextLine();
+    void ViewInfo() {
+        cout << "Student ID: " << id << ", Name: " << name << endl;
+    }
 
-            switch (choice) {
-                case "1":
-                    studentLogin(scanner);
-                    break;
-                case "2":
-                    adminLogin(scanner);
-                    break;
-                case "3":
-                    System.out.println("\n\t***Exiting the system. Goodbye!***\n");
-                    scanner.close();
-                    System.exit(0);
-                default:
-                    System.out.println("\nInvalid choice. Please enter 1, 2, or 3.");
-            }
+    vector<string> GetEnrolledCourses() {
+        return enrolledCourses;
+    }
+};
+
+class Admin {
+public:
+    string adminId;
+    string name;
+
+    Admin(string id, string adminName) {
+        adminId = id;
+        name = adminName;
+    }
+
+    void UpdateCourseCapacities(int courseID, int newCapacity) {
+        // Code to update course capacity
+        cout << "[DEBUG] Updating capacity for course: " << courseID << " to " << newCapacity << endl;
+    }
+};
+
+vector<Student> students;
+vector<Admin> admins;
+
+Student* FindStudentById(string id) {
+    for (auto& student : students) {
+        if (student.id == id) {
+            return &student;
         }
     }
+    return nullptr;
+}
 
-    private static void studentLogin(Scanner scanner) {
-        System.out.print("Enter Student ID: ");
-        String studentId = scanner.nextLine();
-        // For debugging
-        System.out.println("\n\t[DEBUG] Student ID entered: " + studentId);
-
-        // Validate student ID
-        Student student = findStudentById(studentId);
-        if (student != null) {
-            System.out.println("\tWelcome, " + student.getName());
-            studentMenu(scanner, student);
-        } else {
-            System.out.println("\tInvalid Student ID. Please try again.");
+Admin* FindAdminById(string id) {
+    for (auto& admin : admins) {
+        if (admin.adminId == id) {
+            return &admin;
         }
     }
+    return nullptr;
+}
 
-    private static void adminLogin(Scanner scanner) {
-        System.out.print("Enter Admin ID: ");
-        String adminId = scanner.nextLine();
-        // For debugging
-        System.out.println("\n\t[DEBUG] Admin ID entered: " + adminId);
+void StudentLogin() {
+    string studentId;
+    cout << "Enter Student ID: ";
+    cin >> studentId;
 
-        // Validate admin ID
-        Admin admin = findAdminById(adminId);
-        if (admin != null) {
-            System.out.printf("\n\t*Welcome, Admin %s!\n", admin.getName());
-            adminMenu(scanner);
-        } else {
-            System.out.println("\n\tInvalid Admin ID. Please try again.");
+    Student* student = FindStudentById(studentId);
+    if (student != nullptr) {
+        cout << "Welcome, " << student->name << endl;
+        student->ViewInfo(); // Display student info
+        // Add code for student menu here
+    } else {
+        cout << "Invalid Student ID. Please try again." << endl;
+    }
+}
+
+void AdminLogin() {
+    string adminId;
+    cout << "Enter Admin ID: ";
+    cin >> adminId;
+
+    Admin* admin = FindAdminById(adminId);
+    if (admin != nullptr) {
+        cout << "Welcome, Admin " << admin->name << endl;
+        // Add code for admin menu here
+    } else {
+        cout << "Invalid Admin ID. Please try again." << endl;
+    }
+}
+
+int main() {
+    // Adding some dummy data
+    students.push_back(Student("12345", "John Doe"));
+    students.push_back(Student("67890", "Jane Smith"));
+    admins.push_back(Admin("admin", "Admin User"));
+
+    while (true) {
+        cout << "\n--- Course Registration System ---" << endl;
+        cout << "\t1. Student Login" << endl;
+        cout << "\t2. Admin Login" << endl;
+        cout << "\t3. Exit" << endl;
+        cout << "Choose an option: ";
+
+        int choice;
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                StudentLogin();
+                break;
+            case 2:
+                AdminLogin();
+                break;
+            case 3:
+                cout << "\n\t***Exiting the system. Goodbye!***\n" << endl;
+                return 0;
+            default:
+                cout << "\nInvalid choice. Please enter 1, 2, or 3." << endl;
         }
-    }
-
-    private static void studentMenu(Scanner scanner, Student student) {
-        while (true) {
-            System.out.println("\n--- Student Menu ---");
-            System.out.println("\t1. View Available Courses");
-            System.out.println("\t2. Register for a Course");
-            System.out.println("\t3. View Enrolled Courses");
-            System.out.println("\t4. Undo Last Registration");
-            System.out.println("\t5. Logout");
-
-            System.out.print("Choose an option: ");
-            String choice = scanner.nextLine();
-
-            switch (choice) {
-                case "1":
-                    viewAvailableCourses();
-                    break;
-                case "2":
-                    registerForCourse(scanner, student);
-                    break;
-                case "3":
-                    viewEnrolledCourses(student);
-                    break;
-                case "4":
-                    undoLastRegistration(student);
-                    break;
-                case "5":
-                    System.out.println("Logging out...");
-                    return;  // Exit to main menu
-                default:
-                    System.out.println("Invalid choice. Please enter a number between 1 and 5.");
-            }
-        }
-    }
-
-    private static void adminMenu(Scanner scanner) {
-        while (true) {
-            System.out.println("\n--- Admin Menu ---");
-            System.out.println("\t1. Manage Students");
-            System.out.println("\t2. Manage Courses");
-            System.out.println("\t3. Generate Reports");
-            System.out.println("\t4. Update Course Capacities");
-            System.out.println("\t5. Logout");
-
-            System.out.print("Choose an option: ");
-            String choice = scanner.nextLine();
-
-            switch (choice) {
-                case "1":
-                    manageStudents(scanner);
-                    break;
-                case "2":
-                    manageCourses(scanner);
-                    break;
-                case "3":
-                    generateReports();
-                    break;
-                case "4":
-                    updateCourseCapacities(scanner);
-                    break;
-                case "5":
-                    System.out.println("Logging out...");
-                    return;  // Exit to main menu
-                default:
-                    System.out.println("Invalid choice. Please enter a number between 1 and 5.");
-            }
-        }
-    }
-
-    // Methods to handle student functionalities
-    private static void viewAvailableCourses() {
-        System.out.println("[DEBUG] Displaying available courses...");
-        // Add logic to display available courses
-    }
-
-    private static void registerForCourse(Scanner scanner, Student student) {
-        System.out.print("Enter Course Code to register: ");
-        String courseCode = scanner.nextLine();
-        System.out.println("[DEBUG] Registering for course: " + courseCode);
-        student.enrollCourse(courseCode);
-        System.out.printf("Successfully registered for course: %s\n", courseCode);
-        // Add further logic to handle course prerequisites and capacity
-    }
-
-    private static void viewEnrolledCourses(Student student) {
-        System.out.println("[DEBUG] Displaying enrolled courses for " + student.getName());
-        List<String> courses = student.getEnrolledCourses();
-        for (String course : courses) {
-            System.out.println(course);
-        }
-    }
-
-    private static void undoLastRegistration(Student student) {
-        System.out.println("[DEBUG] Undoing last registration...");
-        // Add logic to undo last registration
-    }
-
-    // Methods to handle admin functionalities
-    private static void manageStudents(Scanner scanner) {
-        System.out.println("[DEBUG] Managing students...");
-        // Add logic to manage students (add, remove, modify)
-    }
-
-    private static void manageCourses(Scanner scanner) {
-        System.out.println("[DEBUG] Managing courses...");
-        // Add logic to manage courses (add, remove, modify)
-    }
-
-    private static void generateReports() {
-        System.out.println("[DEBUG] Generating reports...");
-        // Add logic to generate reports
-    }
-
-    private static void updateCourseCapacities(Scanner scanner) {
-        System.out.print("Enter Course Code to update capacity: ");
-        String courseCode = scanner.nextLine();
-        System.out.print("Enter new maximum capacity: ");
-        int maxCapacity = scanner.nextInt();
-        scanner.nextLine();  // Consume newline
-        System.out.println("[DEBUG] Updating capacity for course: " + courseCode + " to " + maxCapacity);
-        // Add logic to update course capacities
-    }
-
-    // Utility methods to find Student and Admin by ID
-    private static Student findStudentById(String id) {
-        for (Student student : students) {
-            if (student.getId().equals(id)) {
-                return student;
-            }
-        }
-        return null;
-    }
-
-    private static Admin findAdminById(String id) {
-        for (Admin admin : admins) {
-            if (admin.getAdminId().equals(id)) {
-                return admin;
-            }
-        }
-        return null;
     }
 }
