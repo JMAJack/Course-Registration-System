@@ -1,25 +1,28 @@
-public class Admin {
-    private String adminId;
-    private String name;
+#include <iostream>
+#include <string>
 
-    public Admin(String adminId, String name) {
-        this.adminId = adminId;
-        this.name = name;
+using namespace std;
+
+class Admin {
+private:
+    string adminId;
+    string name;
+
+public:
+    Admin(string id, string adminName) {
+        adminId = id;
+        name = adminName;
     }
 
-    public String getAdminId() {
+    string GetAdminId() {
         return adminId;
     }
 
-    public String getName() {
+    string GetName() {
         return name;
     }
 
-    @Override
-    public String toString() {
-        return "Admin{" +
-                "adminId='" + adminId + '\'' +
-                ", name='" + name + '\'' +
-                '}';
+    string ToString() {
+        return "Admin{id='" + adminId + "', name='" + name + "'}";
     }
-}
+};
