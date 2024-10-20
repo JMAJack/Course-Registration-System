@@ -19,49 +19,7 @@ public:
   // Default constructor
   LinkedList() { head = NULL; }
 
-  // Primary constructor
-  LinkedList(Node *h) { head = h; }
 
-  // Accessors
-  Node *Gethead() { return head; }
-
-  // Mutators
-  void Sethead(Node *head) { head = head; }
-
-  void InsertAtFront(Student data) {
-    Node *temp = new Node(data);
-    if (temp != NULL) {
-      if (IsFull()) {
-        cerr << "List is full, Data cannot be added" << endl;
-      } else {
-        if (IsEmpty()) {
-          head = temp;
-        } else {
-          temp->SetNext(head);
-          head = temp;
-        }
-      }
-    }
-  }
-
-  void InsertAtBack(Student data) {
-    Node *temp = new Node(data);
-    if (temp != NULL) {
-      if (IsFull()) {
-        cerr << "List is full, Data cannot be added" << endl;
-      } else {
-        if (IsEmpty()) {
-          head = temp;
-        } else {
-          Node *curr = head;
-          while (curr->getNext() != NULL) {
-            curr = curr->getNext();
-          }
-          curr->SetNext(temp);
-        }
-      }
-    }
-  }
 
   int CountNodes() {
     int count = 0;
@@ -73,17 +31,6 @@ public:
     return count;
   }
 
-  // There could be more search methods thus this part will be updated
-  Student SearchForANode(int id) {
-    Node *curr = head;
-    while (curr != NULL) {
-      if (curr->getData().getLicenseNo() == id) {
-        return curr->getData();
-      }
-      curr = curr->getNext();
-    }
-    return Student();
-  }
 
   bool IsEmpty() { return head == NULL; }
 
@@ -111,32 +58,168 @@ public:
       cout << "List is empty" << endl;
     }
   }
+};
 
-  Student DeleteANode(int id) {
-    Student dataToReturn;
+class StudentLinkedList : public LinkedList {
+public:
+    StudentLinkedList() : LinkedList() {}
 
-    if (!IsEmpty()) {
-      Node *curr = head, *prev = NULL;
+    StudentLinkedList(Node *h) : LinkedList(h) {}
 
-      while (curr != NULL) {
-        if (curr->GetData().GetId() == id) {
-          if (curr == head) {
-            head = head->GetNext();
-          } else {
-            prev->SetNext(curr->GetNext());
-          }
-          dataToReturn = curr->GetData();
-          delete curr;
-          break;
+    // Override the functions to use Course instead of Student
+
+    void InsertAtFront(Student data) {
+        Node *temp = new Node(data);
+        if (temp != NULL) {
+            if (IsFull()) {
+                cerr << "List is full, Data cannot be added" << endl;
+            } else {
+                if (IsEmpty()) {
+                    head = temp;
+                } else {
+                    temp->SetNext(head);
+                    head = temp;
+                }
+            }
         }
-        prev = curr;
-        curr = curr->GetNext();
-      }
-    } else {
-      cerr << "The list is empty; there is nothing to delete!" << endl;
     }
-    return dataToReturn;
-  }
+
+    void InsertAtBack(Student data){
+        Node *temp = new Node(data);
+        if (temp != NULL) {
+            if (IsFull()) {
+                cerr << "List is full, Data cannot be added" << endl;
+            } else {
+                if (IsEmpty()) {
+                    head = temp;
+                } else {
+                    Node *curr = head;
+                    while (curr->GetNext() != NULL) {
+                        curr = curr->GetNext();
+                    }
+                    curr->SetNext(temp);
+                }
+            }
+        }
+    }
+
+    Student SearchForANode(int code){
+        Node *curr = head;
+        while (curr != NULL) {
+            if (curr->GetData().GetCode() == code) {  // GetCode() for Course
+                return curr->GetData();
+            }
+            curr = curr->GetNext();
+        }
+        return Student();  // Return empty Course if not found
+    }
+
+    Student DeleteANode(int code) {
+        Student dataToReturn;
+        if (!IsEmpty()) {
+            Node *curr = head, *prev = NULL;
+
+            while (curr != NULL) {
+                if (curr->GetData().GetCode() == code) {
+                    if (curr == head) {
+                        head = head->GetNext();
+                    } else {
+                        prev->SetNext(curr->GetNext());
+                    }
+                    dataToReturn = curr->GetData();
+                    delete curr;
+                    break;
+                }
+                prev = curr;
+                curr = curr->GetNext();
+            }
+        } else {
+            cerr << "The list is empty; there is nothing to delete!" << endl;
+        }
+        return dataToReturn;
+    }
+};
+
+
+class CourseLinkedList : public LinkedList {
+public:
+    CourseLinkedList() : LinkedList() {}
+
+    CourseLinkedList(Node *h) : LinkedList(h) {}
+
+    // Override the functions to use Course instead of Student
+
+    void InsertAtFront(Course data){
+        Node *temp = new Node(data);
+        if (temp != NULL) {
+            if (IsFull()) {
+                cerr << "List is full, Data cannot be added" << endl;
+            } else {
+                if (IsEmpty()) {
+                    head = temp;
+                } else {
+                    temp->SetNext(head);
+                    head = temp;
+                }
+            }
+        }
+    }
+
+    void InsertAtBack(Course data){
+        Node *temp = new Node(data);
+        if (temp != NULL) {
+            if (IsFull()) {
+                cerr << "List is full, Data cannot be added" << endl;
+            } else {
+                if (IsEmpty()) {
+                    head = temp;
+                } else {
+                    Node *curr = head;
+                    while (curr->GetNext() != NULL) {
+                        curr = curr->GetNext();
+                    }
+                    curr->SetNext(temp);
+                }
+            }
+        }
+    }
+
+    Course SearchForANode(int code){
+        Node *curr = head;
+        while (curr != NULL) {
+            if (curr->GetData().GetCode() == code) {  // GetCode() for Course
+                return curr->GetData();
+            }
+            curr = curr->GetNext();
+        }
+        return Course();  // Return empty Course if not found
+    }
+
+    Course DeleteANode(int code){
+        Course dataToReturn;
+        if (!IsEmpty()) {
+            Node *curr = head, *prev = NULL;
+
+            while (curr != NULL) {
+                if (curr->GetData().GetCode() == code) {
+                    if (curr == head) {
+                        head = head->GetNext();
+                    } else {
+                        prev->SetNext(curr->GetNext());
+                    }
+                    dataToReturn = curr->GetData();
+                    delete curr;
+                    break;
+                }
+                prev = curr;
+                curr = curr->GetNext();
+            }
+        } else {
+            cerr << "The list is empty; there is nothing to delete!" << endl;
+        }
+        return dataToReturn;
+    }
 };
 
 #endif
+
