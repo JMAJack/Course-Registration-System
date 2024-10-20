@@ -10,6 +10,9 @@
 using namespace std;
 
 //The Node acts as the container for both the data and the location of the next node. Crucial for Linked List
+// Cause courses also need a linked list just derive and override functions to
+// take in Course as a parameter. We may also need to rename this class and node
+// as well
 class Node{
 	private:
 		Student data;
