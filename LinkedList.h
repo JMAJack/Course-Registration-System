@@ -12,7 +12,7 @@
 // take in Course as a parameter. We may also need to rename this class and node
 // as well
 class LinkedList {
-private:
+protected:
   Node *head;
 
 public:
