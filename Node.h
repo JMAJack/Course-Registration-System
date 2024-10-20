@@ -41,25 +41,25 @@ class Node{
 			next = n.next;
 		}
 
-		Student getData(){
+		Student GetData(){
 			return data;
 		}
 
-		Node* getNext(){
+		Node* GetNext(){
 			return next;
 		}
 
-		void setData(Student data){
+		void SetData(Student data){
 			this->data = data;
 		}
 
-		void setNext(Node* next){
+		void SetNext(Node* next){
 			this->next = next;
 		}
 
     //this may need to be edited later
-		void display(){
-			data.show();
+		void Display(){
+			//data.show();
 		}
 };
 
