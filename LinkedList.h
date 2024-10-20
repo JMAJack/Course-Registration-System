@@ -31,13 +31,13 @@ public:
   void InsertAtFront(Student data) {
     Node *temp = new Node(data);
     if (temp != NULL) {
-      if (isFull()) {
+      if (IsFull()) {
         cerr << "List is full, Data cannot be added" << endl;
       } else {
-        if (isEmpty()) {
+        if (IsEmpty()) {
           head = temp;
         } else {
-          temp->SetNextNode(head);
+          temp->SetNext(head);
           head = temp;
         }
       }
@@ -47,17 +47,17 @@ public:
   void InsertAtBack(Student data) {
     Node *temp = new Node(data);
     if (temp != NULL) {
-      if (isFull()) {
+      if (IsFull()) {
         cerr << "List is full, Data cannot be added" << endl;
       } else {
-        if (isEmpty()) {
+        if (IsEmpty()) {
           head = temp;
         } else {
           Node *curr = head;
           while (curr->getNext() != NULL) {
             curr = curr->getNext();
           }
-          curr->setNext(temp);
+          curr->SetNext(temp);
         }
       }
     }
@@ -68,7 +68,7 @@ public:
     Node *curr = head;
     while (curr != NULL) {
       count++;
-      curr = curr->GetNextNode();
+      curr = curr->GetNext();
     }
     return count;
   }
@@ -104,7 +104,7 @@ public:
         cout << "[";
         curr->GetData().Display();
         cout << "]->";
-        curr = curr->GetNextNode();
+        curr = curr->GetNext();
       }
       cout << "NULL";
     } else {
@@ -121,16 +121,16 @@ public:
       while (curr != NULL) {
         if (curr->GetData().GetId() == id) {
           if (curr == head) {
-            head = head->GetNextNode();
+            head = head->GetNext();
           } else {
-            prev->SetNextNode(curr->GetNextNode());
+            prev->SetNext(curr->GetNext());
           }
           dataToReturn = curr->GetData();
           delete curr;
           break;
         }
         prev = curr;
-        curr = curr->GetNextNode();
+        curr = curr->GetNext();
       }
     } else {
       cerr << "The list is empty; there is nothing to delete!" << endl;
