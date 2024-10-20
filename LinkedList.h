@@ -64,7 +64,6 @@ class StudentLinkedList : public LinkedList {
 public:
     StudentLinkedList() : LinkedList() {}
 
-    StudentLinkedList(Node *h) : LinkedList(h) {}
 
     // Override the functions to use Course instead of Student
 
@@ -106,7 +105,7 @@ public:
     Student SearchForANode(int code){
         Node *curr = head;
         while (curr != NULL) {
-            if (curr->GetData().GetCode() == code) {  // GetCode() for Course
+            if (curr->GetData().GetId() == code) {  // GetCode() for Course
                 return curr->GetData();
             }
             curr = curr->GetNext();
@@ -120,7 +119,7 @@ public:
             Node *curr = head, *prev = NULL;
 
             while (curr != NULL) {
-                if (curr->GetData().GetCode() == code) {
+                if (curr->GetData().GetId() == code) {
                     if (curr == head) {
                         head = head->GetNext();
                     } else {
@@ -144,8 +143,6 @@ public:
 class CourseLinkedList : public LinkedList {
 public:
     CourseLinkedList() : LinkedList() {}
-
-    CourseLinkedList(Node *h) : LinkedList(h) {}
 
     // Override the functions to use Course instead of Student
 
