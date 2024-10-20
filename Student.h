@@ -2,6 +2,8 @@
 //functions are PascalCase so thats good 
 //I understand we havent had the LinkedList set up as yet however i strongly recommend you still include the course list into this code via comments. An example is in line 14
 //iostream and using namespace std are included in the so their wont be any errors here.
+#ifndef Student_H
+#define Student_H
 
 #include <iostream>
 using namespace std;
@@ -61,3 +63,5 @@ public:
       cout << "Id: " << id << ", Name: " << name << ", GPA: " << GPA;
     }
 };
+
+#endif
