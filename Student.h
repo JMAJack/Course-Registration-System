@@ -5,6 +5,7 @@
 #ifndef Student_H
 #define Student_H
 
+#include "LinkedList.h"
 #include <iostream>
 using namespace std;
 
@@ -14,7 +15,7 @@ private:
   int id;
   string name;
   float GPA;
-//LinkedList enrolledCourses; [will be inlcuded later]
+  LinkedList<Course> enrolledCourses;
 
 public:
   // Default Constructor
