@@ -3,19 +3,17 @@
 
 #include <iostream>
 #include <queue>
-#include <string>
 
 using namespace std;
 
 class Course {
 private:
-    string courseCode;
+    int code;
     string title;
     int credits;
     int maxCapacity;
     int maxPriority;
-    // student class isn't available yet
-    // LinkedList<Student*> enrolledStudents; // Linked list of students
+    // LinkedList<Student> enrolledStudents; // Linked list of students
     queue<Student> waitlist;  // Waitlist queue for students when course is full
     queue<Student> priorityQueue; // Priority queue students
 
@@ -24,24 +22,29 @@ private:
 
 public:
     // Default constructor
-    Course() : courseCode(""), title(""), credits(0), maxCapacity(0) {}
+    Course() : code(""), title(""), credits(0), maxCapacity(0) {}
 
     // Parameterized constructor
-    Course(string courseCode, string title, int credits, int maxCapacity)
-        : courseCode(courseCode), title(title), credits(credits), maxCapacity(maxCapacity) {}
+    Course(string code, int title, int credits, int maxCapacity)
+        : code(code), title(title), credits(credits), maxCapacity(maxCapacity) {}
 
     // Copy constructor
     Course(const Course& other)
-        : courseCode(other.courseCode), title(other.title), credits(other.credits), maxCapacity(other.maxCapacity),
+        : code(other.code), title(other.title), credits(other.credits), maxCapacity(other.maxCapacity),
           enrolledStudents(other.enrolledStudents), waitlist(other.waitlist), priorityQueue(other.priorityQueue) {}
 
     // Getters and Setters
-    string GetCourseCode(){
-        return courseCode;
+    int GetCode(){
+        return code;
     }
 
-    void SetCourseCode(string code) {
-        courseCode = code;
+    //This is for the LinkedList
+    int GetId() {
+        return code;
+    }
+
+    void SetCode(string code) {
+        code = code;
     }
 
     string GetTitle() {
@@ -113,7 +116,7 @@ public:
         if (it != enrolledStudents.end()) {
             enrolledStudents.erase(it);
             // Update the students enrolled courses
-            student->GetEnrolledCourses().remove(courseCode);
+            student->GetEnrolledCourses().remove(code);
             cout << "Student " << student->GetName() << " removed from " << title << endl;
 
             // Enroll next student in priority queue or waitlist if there is space
