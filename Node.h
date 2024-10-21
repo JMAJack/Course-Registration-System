@@ -6,16 +6,16 @@
 #define Node_H
 
 #include "Student.h"
+#include "Course.h"
+
 #include <iostream>
 using namespace std;
 
-//The Node acts as the container for both the data and the location of the next node. Crucial for Linked List
-// Cause courses also need a linked list just derive and override functions to
-// take in Course as a parameter. We may also need to rename this class and node
-// as well
+//MOCK UP FOR DERIVED CLASS APPROACH TO BE USED WITH LINKED LIST
+
+//Parent Class
 class Node{
-	private:
-		Student data;
+	protected:
 		Node* next;
 
 	public:
@@ -24,19 +24,33 @@ class Node{
 			next = NULL;
 		}
 
-    //Primary Constructor
-		Node(Student data){
-			this->data = data;
-		}
-
-    //Primary Constructor
-		Node(Student data, Node* next){
-			this->data = data;
-			this->next = next;
-		}
-
     //Copy Constructor
 		Node(const Node &n){
+			next = n.next;
+		}
+
+		Node* GetNext(){
+			return next;
+		}
+
+		void SetNext(Node* next){
+			this->next = next;
+		}
+};
+
+//Derived Class
+class StudentNode : public Node{
+	private:
+		Student data;
+
+	public:
+	//Default Constructor
+		StudentNode(){
+			next = NULL;
+		}
+
+	//Copy Constructor
+		StudentNode(const StudentNode &n){
 			data = n.data;
 			next = n.next;
 		}
@@ -45,21 +59,45 @@ class Node{
 			return data;
 		}
 
-		Node* GetNext(){
-			return next;
-		}
-
 		void SetData(Student data){
 			this->data = data;
 		}
 
-		void SetNext(Node* next){
-			this->next = next;
+	//this may need to be edited later
+		void Display(){
+			data.Display();
+		}
+};
+
+
+//Derived Class
+class CourseNode : public Node{
+	private:
+		Course data;
+
+	public:
+	//Default Constructor
+		CourseNode(){
+			next = NULL;
 		}
 
-    //this may need to be edited later
+	//Copy Constructor
+		CourseNode(const CourseNode &n){
+			data = n.data;
+			next = n.next;
+		}
+
+		Course GetData(){
+			return data;
+		}
+
+		void SetData(Course data){
+			this->data = data;
+		}
+
+	//this may need to be edited later
 		void Display(){
-			//data.show();
+			data.Display();
 		}
 };
 

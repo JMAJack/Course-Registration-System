@@ -9,6 +9,8 @@
 //LinkedList<Student> studentList;
 //LinkedList<Course> courseList;
 
+//<T> is a placeholder for the data type that will be used with the LinkedList
+
 template <typename T>
 class LinkedList {
 private:

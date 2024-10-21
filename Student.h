@@ -14,7 +14,6 @@ private:
   int id;
   string name;
   float GPA;
-  Linkedlist enrolledCourses;
 //LinkedList enrolledCourses; [will be inlcuded later]
 
 public:
@@ -46,9 +45,9 @@ public:
     float GetGPA(){
       return GPA;
     }
-    Linkedlist GetEnrolledCourses(){
-      return enrolledCourses;
-    }
+
+    //LinkedList GetEnrolledCourses(); [will be included later]
+
   // Mutators
     void SetId(int Id){
       id = Id;
