@@ -72,11 +72,11 @@ void StudentLogin() {
 
     Student* student = FindStudentById(studentId);
     if (student != nullptr) {
-        cout << "Welcome, " << student->name << endl;
+        cout << "\n\tWelcome, " << student->name << endl;
         student->ViewInfo(); // Display student info
         // Add code for student menu here
     } else {
-        cout << "Invalid Student ID. Please try again." << endl;
+        cout << "\n\tInvalid Student ID. Please try again." << endl;
     }
 }
 
@@ -87,10 +87,10 @@ void AdminLogin() {
 
     Admin* admin = FindAdminById(adminId);
     if (admin != nullptr) {
-        cout << "Welcome, Admin " << admin->name << endl;
+        cout << "\n\tWelcome, Admin " << admin->name << endl;
         // Add code for admin menu here
     } else {
-        cout << "Invalid Admin ID. Please try again." << endl;
+        cout << "\n\tInvalid Admin ID. Please try again." << endl;
     }
 }
 
