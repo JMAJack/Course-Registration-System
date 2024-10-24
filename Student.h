@@ -5,16 +5,17 @@
 #ifndef Student_H
 #define Student_H
 
+#include "LinkedList.h"
 #include <iostream>
 using namespace std;
 
 class Student {
-
+//Class Attributes
 private:
   int id;
   string name;
   float GPA;
-//LinkedList enrolledCourses; [will be inlcuded later]
+LinkedList enrolledCourses;
 
 public:
   // Default Constructor
@@ -45,8 +46,9 @@ public:
     float GetGPA(){
       return GPA;
     }
-
-    //LinkedList GetEnrolledCourses(); [will be included later]
+    LinkedList GetEnrolledCourses(){
+      return enrolledClasses;
+    }
 
   // Mutators
     void SetId(int Id){
@@ -57,6 +59,9 @@ public:
     }
     void SetGPA(float gpa){
       GPA = gpa;
+    } 
+    void SetEnrolledClasses(LinkedList EnrolledClasses){
+      enrolledCLasses = EnrolledClasses;
     }
     void Display(){
       cout << "Id: " << id << ", Name: " << name << ", GPA: " << GPA;
