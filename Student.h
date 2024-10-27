@@ -78,8 +78,6 @@ public:
     void SetGPA(float Gpa){
       gpa = Gpa;
     } 
-
-
     
     void SetEnrolledCourses(LinkedList<Course> EnrolledCourses){
       enrolledCourses = EnrolledCourses;

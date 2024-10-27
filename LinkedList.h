@@ -29,25 +29,8 @@ public:
     // Mutators
     void SetHead(Node<T> *h) { head = h; }
 
-    // Insert at the front of the list
-    void InsertAtFront(T data) {
-        Node<T> *temp = new Node<T>(data);
-        if (temp != NULL) {
-            if (IsFull()) {
-                cerr << "List is full, Data cannot be added" << endl;
-            } else {
-                if (IsEmpty()) {
-                    head = temp;
-                } else {
-                    temp->SetNext(head);
-                    head = temp;
-                }
-            }
-        }
-    }
-
     // Insert at the back of the list
-    void InsertAtBack(T data) {
+    void Insert(T data) {
         Node<T> *temp = new Node<T>(data);
         if (temp != NULL) {
             if (IsFull()) {
@@ -67,7 +50,7 @@ public:
     }
 
     // Count the number of nodes
-    int CountNodes() {
+    int Size() {
         int count = 0;
         Node<T> *curr = head;
         while (curr != NULL) {
@@ -78,7 +61,7 @@ public:
     }
 
     // Search for a node by ID (assuming T has a GetId or equivalent method)
-    T SearchForANode(int id) {
+    T Search(int id) {
         Node<T> *curr = head;
         while (curr != NULL) {
             if (curr->GetData().GetId() == id) {  // Assuming T has GetId() method
@@ -102,8 +85,30 @@ public:
         return true;
     }
 
+    // Delete a node by ID
+    void Remove(T data) {
+        if (!IsEmpty()) {
+            Node<T> *curr = head, *prev = NULL;
+            while (curr != NULL) {
+                if (curr->GetData() == data) {
+                    if (curr == head) {
+                        head = head->GetNext();
+                    } else {
+                        prev->SetNext(curr->GetNext());
+                    }
+                    delete curr;
+                    break;
+                }
+                prev = curr;
+                curr = curr->GetNext();
+            }
+        } else {
+            cerr << "The list is empty; there is nothing to delete!" << endl;
+        }
+    }
+
     // Display the list [MAY NEED TO CHANGE LATER]
-    void DisplayList() {
+    void DisplayList () {
         Node<T> *curr = head;
         if (!IsEmpty()) {
             while (curr != NULL) {
@@ -118,32 +123,7 @@ public:
         }
     }
 
-    // Delete a node by ID
-    T DeleteANode(int id) {
-        T dataToReturn;
-
-        if (!IsEmpty()) {
-            Node<T> *curr = head, *prev = NULL;
-
-            while (curr != NULL) {
-                if (curr->GetData().GetId() == id) {  // Assuming T has GetId() method
-                    if (curr == head) {
-                        head = head->GetNext();
-                    } else {
-                        prev->SetNext(curr->GetNext());
-                    }
-                    dataToReturn = curr->GetData();
-                    delete curr;
-                    break;
-                }
-                prev = curr;
-                curr = curr->GetNext();
-            }
-        } else {
-            cerr << "The list is empty; there is nothing to delete!" << endl;
-        }
-        return dataToReturn;
-    }
+    
 };
 
 #endif

@@ -18,19 +18,19 @@ private:
     queue<Student> priorityQueue;       
 
 public:
-    
+    // Default constructor
     Course() : courseCode(""), title(""), credits(0), maxCapacity(0) {}
 
-    
+    // Primary constructor
     Course(string courseCode, string title, int credits, int maxCapacity) 
         : courseCode(courseCode), title(title), credits(credits), maxCapacity(maxCapacity) {}
 
-    
+    // Copy constructor
     Course(const Course& other)
         : courseCode(other.courseCode), title(other.title), credits(other.credits), maxCapacity(other.maxCapacity),
           enrolledStudents(other.enrolledStudents), waitlist(other.waitlist), priorityQueue(other.priorityQueue) {}
 
-    
+    // Accessors and mutators
     string GetCourseCode() { return courseCode; }
 
     void SetCourseCode(string code) { courseCode = code; }
@@ -44,13 +44,29 @@ public:
     int GetMaxCapacity() { return maxCapacity; }
     void SetMaxCapacity(int capacity) { maxCapacity = capacity; }
 
-    
-    void AddStudent(Student student, bool isPriority) {
-        if (enrolledStudents.size() < maxCapacity) {
-            enrolledStudents.push_back(student);
-            cout << "Student " << student.GetName() << " enrolled in " << title << endl;
+    LinkedList<Student> GetEnrolledStudents() { return enrolledStudents; }
+    void SetEnrolledStudents(LinkedList<Student> students) { enrolledStudents = students; }
+
+    queue<Student> GetWaitlist() { return waitlist; }
+    void SetWaitlist(queue<Student> newWaitlist) { waitlist = newWaitlist; }
+
+    queue<Student> GetPriorityQueue() { return priorityQueue; }
+    void SetPriorityQueue(queue<Student> newPriorityQueue) { priorityQueue = newPriorityQueue; }
+
+    void Display() {
+        cout << "Course Code: " << courseCode << endl;
+        cout << "Title: " << title << endl;
+        cout << "Credits: " << credits << endl;
+        cout << "Max Capacity: " << maxCapacity << endl;
+    }
+
+    //ADDITIONAL FUNCTIONS
+    void AddStudent(Student student) {
+        if (enrolledStudents.Size() < maxCapacity) {
+            enrolledStudents.Insert(student);
+            cout << "Student " << student.GetName() << " added to " << title << endl;
         } else {
-            if (isPriority) {
+            if (student.GetIsPriority()) {
                 priorityQueue.push(student);
                 cout << "Student " << student.GetName() << " added to priority queue for " << title << endl;
             } else {
@@ -59,28 +75,26 @@ public:
             }
         }
     }
+    
 
     void RemoveStudent(Student student) {
-        enrolledStudents.remove(student);
+        enrolledStudents.Remove(student);
         cout << "Student " << student.GetName() << " removed from " << title << endl;
 
-        
         if (!priorityQueue.empty()) {
             Student nextPriorityStudent = priorityQueue.front();
             priorityQueue.pop();
-            AddStudent(nextPriorityStudent, true);  
+            AddStudent(nextPriorityStudent);  
         } else if (!waitlist.empty()) {
             Student nextWaitlistStudent = waitlist.front();
             waitlist.pop();
-            AddStudent(nextWaitlistStudent, false); 
+            AddStudent(nextWaitlistStudent); 
         }
     }
 
-    void DisplayEnrolledStudents() const {
+    void DisplayEnrolledStudents() {
         cout << "Students enrolled in " << title << ":" << endl;
-        for (const auto& student : enrolledStudents) {
-            cout << student.GetName() << endl;
-        }
+        enrolledStudents.DisplayList();
     }
 
     void DisplayWaitlist() const {
