@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <queue>
+#include <fstream>
 
 using namespace std;
 
@@ -114,4 +115,54 @@ public:
             tempPriorityQueue.pop();
         }
     }
+
+     // Serialize the course data to a binary file
+    void Serialize(ofstream& outFile) const {
+        size_t courseCodeLength = courseCode.size();
+        outFile.write(reinterpret_cast<const char*>(&courseCodeLength), sizeof(courseCodeLength));
+        outFile.write(courseCode.c_str(), courseCodeLength);
+
+        size_t titleLength = title.size();
+        outFile.write(reinterpret_cast<const char*>(&titleLength), sizeof(titleLength));
+        outFile.write(title.c_str(), titleLength);
+
+        outFile.write(reinterpret_cast<const char*>(&credits), sizeof(credits));
+        outFile.write(reinterpret_cast<const char*>(&maxCapacity), sizeof(maxCapacity));
+
+        // Serialize enrolledStudents LinkedList
+        int studentCount = enrolledStudents.Size();
+        outFile.write(reinterpret_cast<const char*>(&studentCount), sizeof(studentCount));
+        Node<Student>* currentStudent = enrolledStudents.GetHead();
+        while (currentStudent != nullptr) {
+            currentStudent->GetData().Serialize(outFile); // Assuming Student has Serialize
+            currentStudent = currentStudent->GetNext();
+        }
+    }
+
+    // Deserialize the course data from a binary file
+    void Deserialize(ifstream& inFile) {
+        size_t courseCodeLength;
+        inFile.read(reinterpret_cast<char*>(&courseCodeLength), sizeof(courseCodeLength));
+        courseCode.resize(courseCodeLength);
+        inFile.read(&courseCode[0], courseCodeLength);
+
+        size_t titleLength;
+        inFile.read(reinterpret_cast<char*>(&titleLength), sizeof(titleLength));
+        title.resize(titleLength);
+        inFile.read(&title[0], titleLength);
+
+        inFile.read(reinterpret_cast<char*>(&credits), sizeof(credits));
+        inFile.read(reinterpret_cast<char*>(&maxCapacity), sizeof(maxCapacity));
+
+        // Deserialize enrolledStudents LinkedList
+        int studentCount;
+        inFile.read(reinterpret_cast<char*>(&studentCount), sizeof(studentCount));
+        enrolledStudents = LinkedList<Student>();
+        for (int i = 0; i < studentCount; ++i) {
+            Student student;
+            student.Deserialize(inFile); // Assuming Student has Deserialize
+            enrolledStudents.Insert(student);
+        }
+    }
+
 };
