@@ -6,6 +6,7 @@
 #define Student_H
 
 #include "LinkedList.h"
+#include "Course.h"
 #include <iostream>
 using namespace std;
 
@@ -14,27 +15,31 @@ class Student {
 private:
   int id;
   string name;
-  float GPA;
-LinkedList enrolledCourses;
+  float gpa;
+  bool isPriority;
+  LinkedList<Course> enrolledCourses;
 
 public:
   // Default Constructor
   Student() {
     id = 0;
     name = "";
-    GPA = 0;
+    gpa = 0;
+    isPriority = false;
   }
   // Primary Constructor
-    Student(int Id, string Name, float gpa){
+    Student(int Id, string Name, float Gpa, bool IsPriority){
       id = Id;
       name = Name;
-      GPA = gpa;
+      gpa = Gpa;
+      isPriority = IsPriority;
     }
   // Copy Constructor
     Student(const Student &s){
       id = s.id;
       name = s.name;
-      GPA = s.GPA;
+      gpa = s.gpa;
+      isPriority = s.isPriority;
     }
   // Accessors
     int GetId(){
@@ -44,10 +49,22 @@ public:
       return name;
     }
     float GetGPA(){
-      return GPA;
+      return gpa;
     }
-    LinkedList GetEnrolledCourses(){
-      return enrolledClasses;
+
+    //Using Student class to set the isPriority variable using GPA
+    bool GetIsPriority(){
+      if (gpa >= 3.5){
+        isPriority = true;
+      }
+      else{
+        isPriority = false;
+      }
+      return isPriority;
+    }
+
+    LinkedList<Course> GetEnrolledCourses(){
+      return enrolledCourses;
     }
 
   // Mutators
@@ -57,14 +74,19 @@ public:
     void SetName(string Name){
       name = Name;
     }
-    void SetGPA(float gpa){
-      GPA = gpa;
+
+    void SetGPA(float Gpa){
+      gpa = Gpa;
     } 
-    void SetEnrolledClasses(LinkedList EnrolledClasses){
-      enrolledCLasses = EnrolledClasses;
+
+
+    
+    void SetEnrolledCourses(LinkedList<Course> EnrolledCourses){
+      enrolledCourses = EnrolledCourses;
     }
+
     void Display(){
-      cout << "Id: " << id << ", Name: " << name << ", GPA: " << GPA;
+      cout << "Id: " << id << ", Name: " << name << ", GPA: " << gpa;
     }
 };
 
