@@ -24,7 +24,7 @@ public:
     LinkedList(Node<T> *h) { head = h; }
 
     // Accessors
-    Node<T> *GetHead() { return head; }
+    Node<T> *GetHead() const { return head; }
 
     // Mutators
     void SetHead(Node<T> *h) { head = h; }
@@ -50,7 +50,7 @@ public:
     }
 
     // Count the number of nodes
-    int Size() {
+    int Size() const{
         int count = 0;
         Node<T> *curr = head;
         while (curr != NULL) {
