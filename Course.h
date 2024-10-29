@@ -134,22 +134,35 @@ public:
         }
     }
 
-    void RemoveStudent(Student student)
-    {
-        enrolledStudents.Remove(student);
-        cout << "Student " << student.GetName() << " removed from " << title << endl;
-
-        if (!priorityQueue.empty())
-        {
-            Student nextPriorityStudent = priorityQueue.front();
-            priorityQueue.pop();
-            AddStudent(nextPriorityStudent);
+    void RemoveStudent(Student student){
+        //if student is in enrolledStudents
+        if (enrolledStudents.Search(student) != nullptr){
+            enrolledStudents.Remove(student);
+            cout << "Student " << student.GetName() << " removed from " << title << endl;
+            //if priorityQueue is not empty
+            if (!priorityQueue.empty()){
+                Student nextPriorityStudent = priorityQueue.front();
+                priorityQueue.pop();
+                AddStudent(nextPriorityStudent);
+            }
+            //if waitlist is not empty
+            else if (!waitlist.empty()){
+                Student nextWaitlistStudent = waitlist.front();
+                waitlist.pop();
+                AddStudent(nextWaitlistStudent);
+            }
         }
-        else if (!waitlist.empty())
-        {
-            Student nextWaitlistStudent = waitlist.front();
+
+        //if student is in priorityQueue
+        else if (priorityQueue.front() == student){
+            priorityQueue.pop();
+            cout << "Student " << student.GetName() << " removed from priority queue for " << title << endl;
+        }
+
+        //if student is in waitlist
+        else if (waitlist.front() == student){
             waitlist.pop();
-            AddStudent(nextWaitlistStudent);
+            cout << "Student " << student.GetName() << " removed from waitlist for " << title << endl;
         }
     }
 
