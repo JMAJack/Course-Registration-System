@@ -61,15 +61,15 @@ public:
     }
 
     // Search for a node by ID (assuming T has a GetId or equivalent method)
-    T Search(int id) {
+    T* Search(T id) {
         Node<T> *curr = head;
-        while (curr != NULL) {
-            if (curr->GetData().GetId() == id) {  // Assuming T has GetId() method
+        while (curr != nullptr) {
+            if (curr->GetData() == id) {  
                 return curr->GetData();
             }
             curr = curr->GetNext();
         }
-        return T();  // Return default-constructed object if not found
+        return nullptr;  // Return default-constructed object if not found
     }
 
     // Check if the list is empty

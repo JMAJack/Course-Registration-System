@@ -9,31 +9,53 @@ using namespace std;
 
 class Course {
 private:
-    string courseCode;
+    string code;
     string title;
     int credits;
     int maxCapacity;
+    Course *prerequisites[2];
     LinkedList<Student> enrolledStudents;     
     queue<Student> waitlist;           
     queue<Student> priorityQueue;       
 
 public:
     // Default constructor
-    Course() : courseCode(""), title(""), credits(0), maxCapacity(0) {}
+    Course() {
+        code = "";
+        title = "";
+        credits = 0;
+        maxCapacity = 0;
+        prerequisites[0] = nullptr;
+        prerequisites[1] = nullptr;
+    }
 
     // Primary constructor
-    Course(string courseCode, string title, int credits, int maxCapacity) 
-        : courseCode(courseCode), title(title), credits(credits), maxCapacity(maxCapacity) {}
+    Course(string Code, string Title, int Credits, int MaxCapacity, Course *Prerequisites[2]) {
+        code = Code;
+        title = Title;
+        credits = Credits;
+        maxCapacity = MaxCapacity;
+        prerequisites[0] = Prerequisites[0];
+        prerequisites[1] = Prerequisites[1];
+    }
 
     // Copy constructor
-    Course(const Course& other)
-        : courseCode(other.courseCode), title(other.title), credits(other.credits), maxCapacity(other.maxCapacity),
-          enrolledStudents(other.enrolledStudents), waitlist(other.waitlist), priorityQueue(other.priorityQueue) {}
+    Course(const Course &c) {
+        code = c.code;
+        title = c.title;
+        credits = c.credits;
+        maxCapacity = c.maxCapacity;
+        prerequisites[0] = c.prerequisites[0];
+        prerequisites[1] = c.prerequisites[1];
+        enrolledStudents = c.enrolledStudents;
+        waitlist = c.waitlist;
+        priorityQueue = c.priorityQueue;
+    }
 
     // Accessors and mutators
-    string GetCourseCode() { return courseCode; }
+    string GetCode() { return code; }
 
-    void SetCourseCode(string code) { courseCode = code; }
+    void SetCode(string Code) { code = code; }
 
     string GetTitle()  { return title; }
     void SetTitle(string newTitle) { title = newTitle; }
@@ -43,6 +65,9 @@ public:
 
     int GetMaxCapacity() { return maxCapacity; }
     void SetMaxCapacity(int capacity) { maxCapacity = capacity; }
+
+    Course* GetPrerequisites(int index) { return prerequisites[index]; }
+    void SetPrerequisites(int index, Course *prereq) { prerequisites[index] = prereq; }
 
     LinkedList<Student> GetEnrolledStudents() { return enrolledStudents; }
     void SetEnrolledStudents(LinkedList<Student> students) { enrolledStudents = students; }
@@ -54,15 +79,31 @@ public:
     void SetPriorityQueue(queue<Student> newPriorityQueue) { priorityQueue = newPriorityQueue; }
 
     void Display() {
-        cout << "Course Code: " << courseCode << endl;
+        cout << "Course Code: " << code << endl;
         cout << "Title: " << title << endl;
         cout << "Credits: " << credits << endl;
         cout << "Max Capacity: " << maxCapacity << endl;
+        cout << "Prerequisites: ";
+        for (int i = 0; i < 2; i++) {
+            if (prerequisites[i] != nullptr) {
+                cout << prerequisites[i]->GetCode() << " ";
+            }
+        }
+        cout << endl;
     }
 
     //ADDITIONAL FUNCTIONS
     void AddStudent(Student student) {
         if (enrolledStudents.Size() < maxCapacity) {
+            //check if student meets prerequisites
+            for (int i = 0; i < 2; i++) {
+                if (prerequisites[i] != nullptr) {
+                    if (student.GetEnrolledCourses().Search(*prerequisites[i]) == nullptr) {
+                        cout << "Student " << student.GetName() << " does not meet prerequisites for " << title << endl;
+                        return;
+                    }
+                }
+            }
             enrolledStudents.Insert(student);
             cout << "Student " << student.GetName() << " added to " << title << endl;
         } else {
@@ -73,9 +114,9 @@ public:
                 waitlist.push(student);
                 cout << "Student " << student.GetName() << " added to waitlist for " << title << endl;
             }
-        }
+
+        }   
     }
-    
 
     void RemoveStudent(Student student) {
         enrolledStudents.Remove(student);
