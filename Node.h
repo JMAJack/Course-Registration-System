@@ -8,11 +8,12 @@
 #include <iostream>
 using namespace std;
 
+
 // Template Node class that can store any type of data (e.g., Student, Course)
-template <typename T>
+template <class T>
 class Node {
 private:
-    T data;          // Generic data type
+    T data;          // Data stored in the node
     Node<T>* next;   // Pointer to the next node in the list
 
 public:
@@ -55,11 +56,6 @@ public:
 
     void SetNext(Node<T>* next) {
         this->next = next;
-    }
-
-    // Display function (assuming T has a Display method)
-    void Display() {
-        data.Display();  // Calls the Display method of the stored object
     }
 
     // Optional: You could add a GetId() or GetCode() here if needed for searching

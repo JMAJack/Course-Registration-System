@@ -11,7 +11,7 @@
 
 //<T> is a placeholder for the data type that will be used with the LinkedList
 
-template <typename T>
+template <class T>
 class LinkedList {
 private:
     Node<T> *head;  // Template node
@@ -65,7 +65,7 @@ public:
         Node<T> *curr = head;
         while (curr != nullptr) {
             if (curr->GetData() == id) {  
-                return curr->GetData();
+                return &curr->GetData();
             }
             curr = curr->GetNext();
         }

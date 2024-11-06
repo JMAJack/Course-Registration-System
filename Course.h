@@ -1,317 +1,127 @@
+#ifndef COURSE_H
+#define COURSE_H
 
 #include <iostream>
 #include <queue>
 #include <fstream>
 
-#include "Student.h"
-#include "LinkedList.h"
-
 using namespace std;
 
-class Course
-{
+
+class Course {
 private:
     string code;
     string title;
     int credits;
     int maxCapacity;
-    Course *prerequisites[2];
-    LinkedList<Student> enrolledStudents;
-    queue<Student> waitlist;
-    queue<Student> priorityQueue;
+    Course* prerequisites[2];
 
 public:
     // Default constructor
-    Course()
-    {
-        code = "";
-        title = "";
-        credits = 0;
-        maxCapacity = 0;
+    Course() : code(""), title(""), credits(0), maxCapacity(0) {
         prerequisites[0] = nullptr;
         prerequisites[1] = nullptr;
     }
 
     // Primary constructor
-    Course(string Code, string Title, int Credits, int MaxCapacity, Course *Prerequisites[2])
-    {
-        code = Code;
-        title = Title;
-        credits = Credits;
-        maxCapacity = MaxCapacity;
+    Course(string Code, string Title, int Credits, int MaxCapacity, Course* Prerequisites[2])
+        : code(Code), title(Title), credits(Credits), maxCapacity(MaxCapacity) {
         prerequisites[0] = Prerequisites[0];
         prerequisites[1] = Prerequisites[1];
     }
 
     // Copy constructor
-    Course(const Course &c)
-    {
-        code = c.code;
-        title = c.title;
-        credits = c.credits;
-        maxCapacity = c.maxCapacity;
+    Course(const Course& c)
+        : code(c.code), title(c.title), credits(c.credits), maxCapacity(c.maxCapacity) {
         prerequisites[0] = c.prerequisites[0];
         prerequisites[1] = c.prerequisites[1];
-        enrolledStudents = c.enrolledStudents;
-        waitlist = c.waitlist;
-        priorityQueue = c.priorityQueue;
     }
 
     // Accessors and mutators
-    string GetCode() { return code; }
+    string GetCode() const { return code; }
+    void SetCode(string Code) { code = Code; }
 
-    void SetCode(string Code) { code = code; }
-
-    string GetTitle() { return title; }
+    string GetTitle() const { return title; }
     void SetTitle(string newTitle) { title = newTitle; }
 
-    int GetCredits() { return credits; }
+    int GetCredits() const { return credits; }
     void SetCredits(int newCredits) { credits = newCredits; }
 
-    int GetMaxCapacity() { return maxCapacity; }
+    int GetMaxCapacity() const { return maxCapacity; }
     void SetMaxCapacity(int capacity) { maxCapacity = capacity; }
 
-    Course *GetPrerequisites(int index) { return prerequisites[index]; }
-    void SetPrerequisites(int index, Course *prereq) { prerequisites[index] = prereq; }
+    Course* GetPrerequisites(int index) const { return prerequisites[index]; }
+    void SetPrerequisites(int index, Course* prereq) { prerequisites[index] = prereq; }
 
-    LinkedList<Student> GetEnrolledStudents() { return enrolledStudents; }
-    void SetEnrolledStudents(LinkedList<Student> students) { enrolledStudents = students; }
-
-    queue<Student> GetWaitlist() { return waitlist; }
-    void SetWaitlist(queue<Student> newWaitlist) { waitlist = newWaitlist; }
-
-    queue<Student> GetPriorityQueue() { return priorityQueue; }
-    void SetPriorityQueue(queue<Student> newPriorityQueue) { priorityQueue = newPriorityQueue; }
-
-    void Display()
-    {
+    // Display course details
+    void Display() const {
         cout << "Course Code: " << code << endl;
         cout << "Title: " << title << endl;
         cout << "Credits: " << credits << endl;
         cout << "Max Capacity: " << maxCapacity << endl;
         cout << "Prerequisites: ";
-        for (int i = 0; i < 2; i++)
-        {
-            if (prerequisites[i] != nullptr)
-            {
+        for (int i = 0; i < 2; ++i) {
+            if (prerequisites[i] != nullptr) {
                 cout << prerequisites[i]->GetCode() << " ";
             }
         }
         cout << endl;
     }
 
-    // ADDITIONAL FUNCTIONS
-    void AddStudent(Student student)
-    {
-        if (enrolledStudents.Size() < maxCapacity)
-        {
-            // check if student meets prerequisites
-            for (int i = 0; i < 2; i++)
-            {
-                if (prerequisites[i] != nullptr)
-                {
-                    if (student.GetEnrolledCourses().Search(*prerequisites[i]) == nullptr)
-                    {
-                        cout << "Student " << student.GetName() << " does not meet prerequisites for " << title << endl;
-                        return;
-                    }
-                }
-            }
-            enrolledStudents.Insert(student);
-            cout << "Student " << student.GetName() << " added to " << title << endl;
-        }
-        else
-        {
-            if (student.GetIsPriority())
-            {
-                priorityQueue.push(student);
-                cout << "Student " << student.GetName() << " added to priority queue for " << title << endl;
-            }
-            else
-            {
-                waitlist.push(student);
-                cout << "Student " << student.GetName() << " added to waitlist for " << title << endl;
-            }
-        }
-    }
-
-    void RemoveStudent(Student student){
-        //if student is in enrolledStudents
-        if (enrolledStudents.Search(student) != nullptr){
-            enrolledStudents.Remove(student);
-            cout << "Student " << student.GetName() << " removed from " << title << endl;
-            //if priorityQueue is not empty
-            if (!priorityQueue.empty()){
-                Student nextPriorityStudent = priorityQueue.front();
-                priorityQueue.pop();
-                AddStudent(nextPriorityStudent);
-            }
-            //if waitlist is not empty
-            else if (!waitlist.empty()){
-                Student nextWaitlistStudent = waitlist.front();
-                waitlist.pop();
-                AddStudent(nextWaitlistStudent);
-            }
-        }
-
-        //if student is in priorityQueue
-        else if (priorityQueue.front() == student){
-            priorityQueue.pop();
-            cout << "Student " << student.GetName() << " removed from priority queue for " << title << endl;
-        }
-
-        //if student is in waitlist
-        else if (waitlist.front() == student){
-            waitlist.pop();
-            cout << "Student " << student.GetName() << " removed from waitlist for " << title << endl;
-        }
-    }
-
-    void DisplayEnrolledStudents()
-    {
-        cout << "Students enrolled in " << title << ":" << endl;
-        enrolledStudents.DisplayList();
-    }
-
-    void DisplayWaitlist() const
-    {
-        cout << "Waitlist for " << title << ":" << endl;
-        queue<Student> tempWaitlist = waitlist;
-        while (!tempWaitlist.empty())
-        {
-            cout << tempWaitlist.front().GetName() << endl;
-            tempWaitlist.pop();
-        }
-    }
-
-    void DisplayPriorityQueue() const
-    {
-        cout << "Priority queue for " << title << ":" << endl;
-        queue<Student> tempPriorityQueue = priorityQueue;
-        while (!tempPriorityQueue.empty())
-        {
-            cout << tempPriorityQueue.front().GetName() << endl;
-            tempPriorityQueue.pop();
-        }
+    bool operator==(const Course& c) const {
+        return code == c.code;
     }
 
     // Serialize the course data to a binary file
-    void Serialize(ofstream &outFile) const
-    {
+    void Serialize(ofstream& outFile) const {
         size_t codeLength = code.size();
-        outFile.write(reinterpret_cast<const char *>(&codeLength), sizeof(codeLength));
+        outFile.write(reinterpret_cast<const char*>(&codeLength), sizeof(codeLength));
         outFile.write(code.c_str(), codeLength);
 
         size_t titleLength = title.size();
-        outFile.write(reinterpret_cast<const char *>(&titleLength), sizeof(titleLength));
+        outFile.write(reinterpret_cast<const char*>(&titleLength), sizeof(titleLength));
         outFile.write(title.c_str(), titleLength);
 
-        outFile.write(reinterpret_cast<const char *>(&credits), sizeof(credits));
-        outFile.write(reinterpret_cast<const char *>(&maxCapacity), sizeof(maxCapacity));
+        outFile.write(reinterpret_cast<const char*>(&credits), sizeof(credits));
+        outFile.write(reinterpret_cast<const char*>(&maxCapacity), sizeof(maxCapacity));
 
         // Serialize prerequisites
-        for (int i = 0; i < 2; ++i)
-        {
+        for (int i = 0; i < 2; ++i) {
             bool hasPrerequisite = (prerequisites[i] != nullptr);
-            outFile.write(reinterpret_cast<const char *>(&hasPrerequisite), sizeof(hasPrerequisite));
-            if (hasPrerequisite)
-            {
+            outFile.write(reinterpret_cast<const char*>(&hasPrerequisite), sizeof(hasPrerequisite));
+            if (hasPrerequisite) {
                 prerequisites[i]->Serialize(outFile);
             }
-        }
-
-        // Serialize enrolledStudents LinkedList
-        int studentCount = enrolledStudents.Size();
-        outFile.write(reinterpret_cast<const char *>(&studentCount), sizeof(studentCount));
-        Node<Student> *currentStudent = enrolledStudents.GetHead();
-        while (currentStudent != nullptr)
-        {
-            currentStudent->GetData().Serialize(outFile); // Assuming Student has Serialize
-            currentStudent = currentStudent->GetNext();
-        }
-
-        // Serialize waitlist queue
-        int waitlistSize = waitlist.size();
-        outFile.write(reinterpret_cast<const char *>(&waitlistSize), sizeof(waitlistSize));
-        queue<Student> tempWaitlist = waitlist;
-        while (!tempWaitlist.empty())
-        {
-            tempWaitlist.front().Serialize(outFile); // Assuming Student has Serialize
-            tempWaitlist.pop();
-        }
-
-        // Serialize priority queue
-        int priorityQueueSize = priorityQueue.size();
-        outFile.write(reinterpret_cast<const char *>(&priorityQueueSize), sizeof(priorityQueueSize));
-        queue<Student> tempPriorityQueue = priorityQueue;
-        while (!tempPriorityQueue.empty())
-        {
-            tempPriorityQueue.front().Serialize(outFile); // Assuming Student has Serialize
-            tempPriorityQueue.pop();
         }
     }
 
     // Deserialize the course data from a binary file
-    void Deserialize(ifstream &inFile)
-    {
+    void Deserialize(ifstream& inFile) {
         size_t codeLength;
-        inFile.read(reinterpret_cast<char *>(&codeLength), sizeof(codeLength));
+        inFile.read(reinterpret_cast<char*>(&codeLength), sizeof(codeLength));
         code.resize(codeLength);
         inFile.read(&code[0], codeLength);
 
         size_t titleLength;
-        inFile.read(reinterpret_cast<char *>(&titleLength), sizeof(titleLength));
+        inFile.read(reinterpret_cast<char*>(&titleLength), sizeof(titleLength));
         title.resize(titleLength);
         inFile.read(&title[0], titleLength);
 
-        inFile.read(reinterpret_cast<char *>(&credits), sizeof(credits));
-        inFile.read(reinterpret_cast<char *>(&maxCapacity), sizeof(maxCapacity));
+        inFile.read(reinterpret_cast<char*>(&credits), sizeof(credits));
+        inFile.read(reinterpret_cast<char*>(&maxCapacity), sizeof(maxCapacity));
 
         // Deserialize prerequisites
-        for (int i = 0; i < 2; ++i)
-        {
+        for (int i = 0; i < 2; ++i) {
             bool hasPrerequisite;
-            inFile.read(reinterpret_cast<char *>(&hasPrerequisite), sizeof(hasPrerequisite));
-            if (hasPrerequisite)
-            {
+            inFile.read(reinterpret_cast<char*>(&hasPrerequisite), sizeof(hasPrerequisite));
+            if (hasPrerequisite) {
                 prerequisites[i] = new Course();
                 prerequisites[i]->Deserialize(inFile);
-            }
-            else
-            {
+            } else {
                 prerequisites[i] = nullptr;
             }
         }
-
-        // Deserialize enrolledStudents LinkedList
-        int studentCount;
-        inFile.read(reinterpret_cast<char *>(&studentCount), sizeof(studentCount));
-        enrolledStudents = LinkedList<Student>();
-        for (int i = 0; i < studentCount; ++i)
-        {
-            Student student;
-            student.Deserialize(inFile); // Assuming Student has Deserialize
-            enrolledStudents.Insert(student);
-        }
-
-        // Deserialize waitlist queue
-        int waitlistSize;
-        inFile.read(reinterpret_cast<char *>(&waitlistSize), sizeof(waitlistSize));
-        for (int i = 0; i < waitlistSize; ++i)
-        {
-            Student student;
-            student.Deserialize(inFile); // Assuming Student has Deserialize
-            waitlist.push(student);
-        }
-
-        // Deserialize priority queue
-        int priorityQueueSize;
-        inFile.read(reinterpret_cast<char *>(&priorityQueueSize), sizeof(priorityQueueSize));
-        for (int i = 0; i < priorityQueueSize; ++i)
-        {
-            Student student;
-            student.Deserialize(inFile); // Assuming Student has Deserialize
-            priorityQueue.push(student);
-        }
     }
 };
+
+#endif // COURSE_H

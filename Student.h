@@ -1,162 +1,104 @@
-// variables should be camelCase for example id or idNUmber
-// functions are PascalCase so thats good
-// I understand we havent had the LinkedList set up as yet however i strongly recommend you still include the course list into this code via comments. An example is in line 14
-// iostream and using namespace std are included in the so their wont be any errors here.
-#ifndef Student_H
-#define Student_H
+#ifndef STUDENT_H
+#define STUDENT_H
 
-#include "LinkedList.h"
 #include "Course.h"
+#include "LinkedList.h"
 #include <iostream>
 #include <fstream>
 
 using namespace std;
 
-class Student
-{
-  // Class Attributes
+class Course; // Forward declaration
+
+class Student {
 private:
-  int id;
-  string name;
-  float gpa;
-  bool isPriority;
-  LinkedList<Course> enrolledCourses;
+    int id;
+    string name;
+    float gpa;
+    bool isPriority;
+    LinkedList<Course> enrolledCourses;
 
 public:
-  // Default Constructor
-  Student()
-  {
-    id = 0;
-    name = "";
-    gpa = 0;
-    isPriority = false;
-  }
-  // Primary Constructor
-  Student(int Id, string Name, float Gpa, bool IsPriority)
-  {
-    id = Id;
-    name = Name;
-    gpa = Gpa;
-    isPriority = IsPriority;
-  }
-  // Copy Constructor
-  Student(const Student &s)
-  {
-    id = s.id;
-    name = s.name;
-    gpa = s.gpa;
-    isPriority = s.isPriority;
-  }
-  // Accessors
-  int GetId() const
-  {
-    return id;
-  }
-  string GetName()
-  {
-    return name;
-  }
-  float GetGPA()
-  {
-    return gpa;
-  }
+    // Default Constructor
+    Student() : id(0), name(""), gpa(0.0), isPriority(false) {}
 
-  // Using Student class to set the isPriority variable using GPA
-  bool GetIsPriority()
-  {
-    if (gpa >= 3.5)
-    {
-      isPriority = true;
+    // Primary Constructor
+    Student(int Id, string Name, float Gpa, bool IsPriority)
+        : id(Id), name(Name), gpa(Gpa), isPriority(IsPriority) {}
+
+    // Copy Constructor
+    Student(const Student& s)
+        : id(s.id), name(s.name), gpa(s.gpa), isPriority(s.isPriority), enrolledCourses(s.enrolledCourses) {}
+
+    // Accessors
+    int GetId() const { return id; }
+    string GetName() const { return name; }
+    float GetGPA() const { return gpa; }
+    bool GetIsPriority() const { return isPriority; }
+    LinkedList<Course> GetEnrolledCourses() const { return enrolledCourses; }
+
+    // Mutators
+    void SetId(int Id) { id = Id; }
+    void SetName(string Name) { name = Name; }
+    void SetGPA(float Gpa) { gpa = Gpa; }
+    void SetIsPriority(bool IsPriority) { isPriority = IsPriority; }
+    void SetEnrolledCourses(LinkedList<Course> EnrolledCourses) { enrolledCourses = EnrolledCourses; }
+
+    // Display student details
+    void Display() const {
+        cout << "ID: " << id << endl;
+        cout << "Name: " << name << endl;
+        cout << "GPA: " << gpa << endl;
+        cout << "Priority: " << (isPriority ? "Yes" : "No") << endl;
     }
-    else
-    {
-      isPriority = false;
+
+    // Serialize the student data to a binary file
+    void Serialize(ofstream& outFile) const {
+        outFile.write(reinterpret_cast<const char*>(&id), sizeof(id));
+
+        size_t nameLength = name.size();
+        outFile.write(reinterpret_cast<const char*>(&nameLength), sizeof(nameLength));
+        outFile.write(name.c_str(), nameLength);
+
+        outFile.write(reinterpret_cast<const char*>(&gpa), sizeof(gpa));
+        outFile.write(reinterpret_cast<const char*>(&isPriority), sizeof(isPriority));
+
+        // Serialize enrolledCourses LinkedList
+        int courseCount = enrolledCourses.Size();
+        outFile.write(reinterpret_cast<const char*>(&courseCount), sizeof(courseCount));
+        Node<Course>* currentCourse = enrolledCourses.GetHead();
+        while (currentCourse != nullptr) {
+            currentCourse->GetData().Serialize(outFile); // Assuming Course has Serialize
+            currentCourse = currentCourse->GetNext();
+        }
     }
-    return isPriority;
-  }
 
-  LinkedList<Course> GetEnrolledCourses()
-  {
-    return enrolledCourses;
-  }
+    // Deserialize the student data from a binary file
+    void Deserialize(ifstream& inFile) {
+        inFile.read(reinterpret_cast<char*>(&id), sizeof(id));
 
-  // Mutators
-  void SetId(int Id)
-  {
-    id = Id;
-  }
-  void SetName(string Name)
-  {
-    name = Name;
-  }
+        size_t nameLength;
+        inFile.read(reinterpret_cast<char*>(&nameLength), sizeof(nameLength));
+        name.resize(nameLength);
+        inFile.read(&name[0], nameLength);
 
-  void SetGPA(float Gpa)
-  {
-    gpa = Gpa;
-  }
+        inFile.read(reinterpret_cast<char*>(&gpa), sizeof(gpa));
+        inFile.read(reinterpret_cast<char*>(&isPriority), sizeof(isPriority));
 
-  void SetEnrolledCourses(LinkedList<Course> EnrolledCourses)
-  {
-    enrolledCourses = EnrolledCourses;
-  }
-
-  void Display()
-  {
-    cout << "Id: " << id << ", Name: " << name << ", GPA: " << gpa;
-  }
-
-  bool operator==(const Student &other) const{
-
-    // Assuming Student has a unique identifier like ID or name
-
-    return this->GetId() == other.GetId();
-  }
-
-  // Serialize the student data to a binary file
-  void Serialize(ofstream &outFile) const
-  {
-    outFile.write(reinterpret_cast<const char *>(&id), sizeof(id));
-    size_t nameLength = name.size();
-    outFile.write(reinterpret_cast<const char *>(&nameLength), sizeof(nameLength));
-    outFile.write(name.c_str(), nameLength);
-    outFile.write(reinterpret_cast<const char *>(&gpa), sizeof(gpa));
-    outFile.write(reinterpret_cast<const char *>(&isPriority), sizeof(isPriority));
-
-    // Serialize enrolledCourses LinkedList
-    int courseCount = enrolledCourses.Size();
-    outFile.write(reinterpret_cast<const char *>(&courseCount), sizeof(courseCount));
-    Node<Course> *currentCourse = enrolledCourses.GetHead();
-    while (currentCourse != nullptr)
-    {
-      currentCourse->GetData().Serialize(outFile);
-      currentCourse = currentCourse->GetNext();
+        // Deserialize enrolledCourses LinkedList
+        int courseCount;
+        inFile.read(reinterpret_cast<char*>(&courseCount), sizeof(courseCount));
+        enrolledCourses = LinkedList<Course>();
+        for (int i = 0; i < courseCount; ++i) {
+            Course course;
+            course.Deserialize(inFile); // Assuming Course has Deserialize
+            enrolledCourses.Insert(course);
+        }
     }
-  }
 
-  // Deserialize the student data from a binary file
-  void Deserialize(ifstream &inFile)
-  {
-    inFile.read(reinterpret_cast<char *>(&id), sizeof(id));
-
-    size_t nameLength;
-    inFile.read(reinterpret_cast<char *>(&nameLength), sizeof(nameLength));
-    name.resize(nameLength);
-    inFile.read(&name[0], nameLength);
-
-    inFile.read(reinterpret_cast<char *>(&gpa), sizeof(gpa));
-    inFile.read(reinterpret_cast<char *>(&isPriority), sizeof(isPriority));
-
-    // Deserialize enrolledCourses LinkedList
-    int courseCount;
-    inFile.read(reinterpret_cast<char *>(&courseCount), sizeof(courseCount));
-    enrolledCourses = LinkedList<Course>();
-    for (int i = 0; i < courseCount; ++i)
-    {
-      Course course;
-      course.Deserialize(inFile);
-      enrolledCourses.Insert(course);
+    bool operator==(const Student& other) const {
+        return id == other.id;
     }
-  }
 };
 
-#endif
+#endif // STUDENT_H
