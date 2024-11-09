@@ -33,6 +33,11 @@ public:
     void SetEnrolledStudents(const LinkedList<Student>& enrolled) { enrolledStudents = enrolled; }
     void SetWaitlist(const queue<Student>& wait) { waitlist = wait; }
     void SetPriorityQueue(const queue<Student>& priority) { priorityQueue = priority; }
+    void Display() {
+        cout << "Enrolled Students: " << enrolledStudents.Size() << endl;
+        cout << "Waitlist: " << waitlist.size() << endl;
+        cout << "Priority Queue: " << priorityQueue.size() << endl;
+    }
 
     // Serialize the StudentTracker data to a binary file
     void Serialize(ofstream& outFile) const {

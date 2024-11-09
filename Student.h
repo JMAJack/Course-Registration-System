@@ -23,8 +23,10 @@ public:
     Student() : id(0), name(""), gpa(0.0), isPriority(false) {}
 
     // Primary Constructor
-    Student(int Id, string Name, float Gpa, bool IsPriority)
-        : id(Id), name(Name), gpa(Gpa), isPriority(IsPriority) {}
+    Student(int Id, string Name, float Gpa, LinkedList<Course> EnrolledCourses)
+        : id(Id), name(Name), gpa(Gpa), enrolledCourses(EnrolledCourses) {
+            isPriority = (gpa >= 3.5);
+        }
 
     // Copy Constructor
     Student(const Student& s)

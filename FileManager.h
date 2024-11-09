@@ -9,10 +9,6 @@
 
 using namespace std;
 
-class Course;
-class Student;
-class StudentTracker;
-
 class FileManager {
 public:
     // Save Students to a binary file
@@ -49,56 +45,72 @@ public:
         return studentList;
     }
 
-    // Save Course data to a binary file
-    static void SaveCourse(const Course& course, const string& filename) {
+    // Save Courses to a binary file
+    static void SaveCourses(const LinkedList<Course>& courseList, const string& filename) {
         ofstream outFile(filename, ios::binary);
         if (outFile.is_open()) {
-            course.Serialize(outFile);
+            Node<Course>* curr = courseList.GetHead();
+            while (curr != nullptr) {
+                curr->GetData().Serialize(outFile);
+                curr = curr->GetNext();
+            }
             outFile.close();
-            cout << "Course saved to " << filename << " in binary format." << endl;
+            cout << "Courses saved to " << filename << " in binary format." << endl;
         } else {
-            cerr << "Error opening file for saving course." << endl;
+            cerr << "Error opening file for saving courses." << endl;
         }
     }
 
-    // Load Course data from a binary file
-    static Course LoadCourse(const string& filename) {
-        Course course;
+    // Load Courses from a binary file
+    static LinkedList<Course> LoadCourses(const string& filename) {
+        LinkedList<Course> courseList;
         ifstream inFile(filename, ios::binary);
         if (inFile.is_open()) {
-            course.Deserialize(inFile);
+            while (inFile.peek() != EOF) {
+                Course course;
+                course.Deserialize(inFile);
+                courseList.Insert(course);
+            }
             inFile.close();
-            cout << "Course loaded from " << filename << " in binary format." << endl;
+            cout << "Courses loaded from " << filename << " in binary format." << endl;
         } else {
-            cerr << "Error opening file for loading course." << endl;
+            cerr << "Error opening file for loading courses." << endl;
         }
-        return course;
+        return courseList;
     }
 
-    // Save StudentTracker data to a binary file
-    static void SaveStudentTracker(const StudentTracker& tracker, const string& filename) {
+    // Save StudentTrackers to a binary file
+    static void SaveStudentTrackers(const LinkedList<StudentTracker>& trackerList, const string& filename) {
         ofstream outFile(filename, ios::binary);
         if (outFile.is_open()) {
-            tracker.Serialize(outFile);
+            Node<StudentTracker>* curr = trackerList.GetHead();
+            while (curr != nullptr) {
+                curr->GetData().Serialize(outFile);
+                curr = curr->GetNext();
+            }
             outFile.close();
-            cout << "StudentTracker saved to " << filename << " in binary format." << endl;
+            cout << "StudentTrackers saved to " << filename << " in binary format." << endl;
         } else {
-            cerr << "Error opening file for saving StudentTracker." << endl;
+            cerr << "Error opening file for saving StudentTrackers." << endl;
         }
     }
 
-    // Load StudentTracker data from a binary file
-    static StudentTracker LoadStudentTracker(const string& filename) {
-        StudentTracker tracker;
+    // Load StudentTrackers from a binary file
+    static LinkedList<StudentTracker> LoadStudentTrackers(const string& filename) {
+        LinkedList<StudentTracker> trackerList;
         ifstream inFile(filename, ios::binary);
         if (inFile.is_open()) {
-            tracker.Deserialize(inFile);
+            while (inFile.peek() != EOF) {
+                StudentTracker tracker;
+                tracker.Deserialize(inFile);
+                trackerList.Insert(tracker);
+            }
             inFile.close();
-            cout << "StudentTracker loaded from " << filename << " in binary format." << endl;
+            cout << "StudentTrackers loaded from " << filename << " in binary format." << endl;
         } else {
-            cerr << "Error opening file for loading StudentTracker." << endl;
+            cerr << "Error opening file for loading StudentTrackers." << endl;
         }
-        return tracker;
+        return trackerList;
     }
 };
 
