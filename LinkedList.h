@@ -3,7 +3,7 @@
 #define LinkedList_H
 
 #include "Node.h"
-
+#include "Course.h"
 // Use templates to allow the class to work with any data type (e.g., Student, Course, etc.)
 //Example:
 //LinkedList<Student> studentList;
@@ -60,17 +60,18 @@ public:
         return count;
     }
 
-    // Search for a node by ID (assuming T has a GetId or equivalent method)
-    T* Search(T id) {
+    // Search for a node based on type T
+    T* Search(T data) {
         Node<T> *curr = head;
         while (curr != nullptr) {
-            if (curr->GetData() == id) {  
+            if (curr->GetData() == data) {  
                 return &curr->GetData();
             }
             curr = curr->GetNext();
         }
         return nullptr;  // Return default-constructed object if not found
     }
+
 
     // Check if the list is empty
     bool IsEmpty() { return head == NULL; }
@@ -112,15 +113,26 @@ public:
         Node<T> *curr = head;
         if (!IsEmpty()) {
             while (curr != NULL) {
-                cout << "[";
                 curr->GetData().Display();  // Assuming T has a Display method
-                cout << "]->";
                 curr = curr->GetNext();
             }
-            cout << "NULL" << endl;
         } else {
             cout << "List is empty" << endl;
         }
+    }
+
+    //Get node based on index
+    Node<T>* GetNode(int index) {
+        Node<T> *curr = head;
+        int count = 0;
+        while (curr != NULL) {
+            if (count == index) {
+                return curr;
+            }
+            count++;
+            curr = curr->GetNext();
+        }
+        return NULL;
     }
 
     

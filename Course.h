@@ -55,17 +55,21 @@ public:
 
     // Display course details
     void Display() const {
+        bool isEmpty = true;
         cout << "Course Code: " << code << endl;
         cout << "Title: " << title << endl;
         cout << "Credits: " << credits << endl;
         cout << "Max Capacity: " << maxCapacity << endl;
         cout << "Prerequisites: ";
-        for (int i = 0; i < 2; ++i) {
+        for (int i = 0; i < 2; i++) {
             if (prerequisites[i] != nullptr) {
                 cout << prerequisites[i]->GetCode() << " ";
+                isEmpty = false;
             }
         }
-        cout << endl;
+        if (isEmpty) {
+            cout << "None";
+        }
     }
 
     bool operator==(const Course& c) const {
