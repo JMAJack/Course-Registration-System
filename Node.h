@@ -41,7 +41,7 @@ public:
     }
 
     // Accessors
-    T GetData() {
+    T& GetData() {
         return data;
     }
 

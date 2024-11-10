@@ -7,9 +7,12 @@
 #include "FileManager.h"
 #include "LinkedList.h"
 #include "Node.h"
+#include <stack>
 
 using namespace std;
 
+
+// Helper functions
 Student FindStudent(LinkedList<Student> &studentList, int studentId)
 {
     Node<Student> *curr = studentList.GetHead();
@@ -23,6 +26,7 @@ Student FindStudent(LinkedList<Student> &studentList, int studentId)
     }
     return Student();
 }
+
 
 Course FindCourse(LinkedList<Course> &courseList, string courseCode)
 {
@@ -38,6 +42,7 @@ Course FindCourse(LinkedList<Course> &courseList, string courseCode)
     return Course();
 }
 
+
 StudentTracker FindStudentTracker(LinkedList<StudentTracker> &studentTrackerList, Course course)
 {
     Node<StudentTracker> *curr = studentTrackerList.GetHead();
@@ -52,46 +57,88 @@ StudentTracker FindStudentTracker(LinkedList<StudentTracker> &studentTrackerList
     return StudentTracker();
 }
 
-bool AuthenticateAdmin()
-{
-    string adminCode;
-    cout << "Admin Login" << endl;
-    cout << "Enter admin code: ";
-    cin >> adminCode;
-    return adminCode == "admin123";
+void Pause() {
+    cout << endl << "\033[34mPress Enter to Continue...\033[0m";
+    cin.get();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
-Student AuthenticateStudent(LinkedList<Student> &studentList)
-{
-    cout << "Student Login" << endl;
-    cout << "Enter your student ID: ";
-    int studentId;
-    cin >> studentId;
+string FormatError(const string& message) {
+    return "\033[31m" + message + "\033[0m"; // 31 is the ANSI code for red text
+}
 
-    // Check if student ID exists in the student list
-    Student student = FindStudent(studentList, studentId);
-    if (student.GetId() != 0)
+//Authentication functions
+bool AuthenticateAdmin()
+{
+    system("cls");
+    string adminCode;
+    cout << "\tAdmin Login" << endl;
+    cout << "Please enter the admin code to login." << endl;
+    cout << "Or enter 0 to go back." << endl;
+    cout << "Enter admin code: ";
+    cin >> adminCode;
+    if (adminCode == "0")
     {
-        cout << "Authentication successful." << endl << endl;
-        return student;
-    }else{
-        cout << "Student ID not found. Please try again." << endl;
-        return Student();
+        return false;
+    }
+    else if (adminCode == "admin123")
+    {
+        cout << "Authentication successful." << endl;
+        Pause();
+        return true;
+    }
+    else
+    {
+        cout << FormatError("Incorrect admin code. Please try again.") << endl;
+        Pause();
+        return false;
     }
 }
 
 
-//Puts temporary data into the files [TEST FUNCTION]
-void prefileLoad(){
-    //sample students and courses
-    Course* prerequisites[2] = { nullptr, nullptr };
+Student AuthenticateStudent(LinkedList<Student> &studentList)
+{
+    system("cls");
+    cout << "\tStudent Login" << endl;
+    cout << "Please enter your student ID to login." << endl;
+    cout << "Or enter 0 to go back." << endl;
+    cout << "Enter your student ID: ";
+    int studentId;
+    cin >> studentId;
+
+    if (studentId == 0)
+    {
+        return Student();
+    }
+    else
+    {
+        // Check if student ID exists in the student list
+        Student student = FindStudent(studentList, studentId);
+        if (student.GetId() != 0)
+        {
+            return student;
+        }
+        else
+        {
+            cout << FormatError("Student ID not found. Please try again.") << endl;
+            Pause();
+            return Student();
+        }
+    }
+}
+
+
+// Puts temporary data into the files [TEST FUNCTION]
+void prefileLoad()
+{
+    // sample students and courses
+    Course *prerequisites[2] = {nullptr, nullptr};
     Course course1("CS101", "Introduction to Computer Science", 3, 30, prerequisites);
     Course course2("CS102", "Data Structures", 3, 30, prerequisites);
 
     LinkedList<Course> courseList;
     courseList.Insert(course1);
     courseList.Insert(course2);
-
 
     Student student1(1, "John Doe", 3.5, courseList);
     Student student2(2, "Jane Smith", 3.0, courseList);
@@ -100,9 +147,7 @@ void prefileLoad(){
     studentList.Insert(student1);
     studentList.Insert(student2);
 
-    
-
-    //sample student tracker
+    // sample student tracker
     StudentTracker tracker1(course1, studentList, queue<Student>(), queue<Student>());
     StudentTracker tracker2(course2, studentList, queue<Student>(), queue<Student>());
 
@@ -110,29 +155,34 @@ void prefileLoad(){
     studentTrackerList.Insert(tracker1);
     studentTrackerList.Insert(tracker2);
 
-    //save students, courses and trackers
+    // save students, courses and trackers
     FileManager::SaveStudents(studentList, "students.dat");
     FileManager::SaveCourses(courseList, "courses.dat");
     FileManager::SaveStudentTrackers(studentTrackerList, "student_trackers.dat");
 
-
-    //load students, courses and trackers
+    // load students, courses and trackers
     LinkedList<Student> loadedStudents = FileManager::LoadStudents("students.dat");
     LinkedList<Course> loadedCourses = FileManager::LoadCourses("courses.dat");
     LinkedList<StudentTracker> loadedStudentTrackers = FileManager::LoadStudentTrackers("student_trackers.dat");
 }
 
-//TEST TO SEE IF DATA IS LOADED
-void loadDisplay(Student student, LinkedList<StudentTracker> studentTrackerList)
+
+//Course Enrollment Functions
+
+// Student Info function
+void StudentInfo(Student student, LinkedList<StudentTracker> studentTrackerList)
 {
     // Load the data of the student that signed in and their course in addition to tracker for that course
+    cout << endl
+         << "\tStudent Info:" << endl;
     student.Display();
     cout << endl
-         << "Enrolled Courses:" << endl;
+         << "\tEnrolled Courses:" << endl;
 
     if (student.GetEnrolledCourses().IsEmpty())
     {
-        cout << "No courses enrolled" << endl << endl;
+        cout << "No courses enrolled" << endl
+             << endl;
     }
     else
     {
@@ -142,19 +192,172 @@ void loadDisplay(Student student, LinkedList<StudentTracker> studentTrackerList)
             Course course = student.GetEnrolledCourses().GetNode(i)->GetData();
             course.Display();
             cout << endl;
+        }
+    }
+}
 
-            // Display the student tracker for the course
-            StudentTracker tracker = FindStudentTracker(studentTrackerList, course);
-            tracker.Display();
-            cout << endl;
+
+// Course Enrollment Screen
+
+
+// Course Removal Screen
+stack<Course> CourseRemoval(Student student, LinkedList<StudentTracker> studentTrackerList, stack<Course> dropStack)
+{
+    int choice;
+    while (true)
+    {
+        system("cls");
+        cout << "\tCourse Removal" << endl;
+        cout << "1. Drop a course" << endl;
+        cout << "2. Undo last drop" << endl;
+        cout << "3. Go Back" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cout << endl;
+
+        switch (choice)
+        {
+        case 1:
+        {
+            // Display the courses the student is already enrolled in
+            cout << "Enrolled Courses:" << endl;
+            for (int i = 0; i < student.GetEnrolledCourses().Size(); i++)
+            {
+                Course course = student.GetEnrolledCourses().GetNode(i)->GetData();
+                cout << i + 1 << ". " << course.GetCode() << ": " << course.GetTitle() 
+                << " ("<< course.GetCredits() << " credits)" << endl;
+            }
+
+            // Ask the student to enter the course code
+            cout << "Enter the course code to drop: ";
+            string courseCode;
+            cin >> courseCode;
+
+            // Check if the student is already enrolled in the course
+            Course course = FindCourse(student.GetEnrolledCourses(), courseCode);
+            if (course.GetCode() == "")
+            {
+                cout << FormatError("Course not found in enrolled courses.") << endl;
+                Pause();
+            }
+            else
+            {
+                // Add the course to the drop stack
+                dropStack.push(course);
+
+                // Remove the course from the student's enrolled courses
+                student.GetEnrolledCourses().Remove(course);
+
+                // Remove the student from the student tracker
+                StudentTracker tracker = FindStudentTracker(studentTrackerList, course);
+                tracker.RemoveStudent(student);
+
+                cout << "Course " << course.GetCode() << ": " << course.GetTitle() << " dropped successfully." << endl;
+                Pause();
+            }
+        }
+        break;
+
+        case 2:
+            if (!dropStack.empty())
+            {
+                Course course = dropStack.top();
+                dropStack.pop();
+
+                // Add the course back to the student's enrolled courses
+                student.GetEnrolledCourses().Insert(course);
+
+                // Add the student back to the student tracker
+                StudentTracker tracker = FindStudentTracker(studentTrackerList, course);
+                tracker.AddStudent(student);
+
+                cout << "Last dropped course " << course.GetCode() << ": " << course.GetTitle() << " added back successfully." << endl;
+                Pause();
+            }
+            else
+            {
+                cout << FormatError("No courses have been dropped in the current session.") << endl;
+                Pause();
+            }
+            break;
+
+        case 3:
+            return dropStack;
+            break;
+
+        default:
+            cout << FormatError("Invalid choice. Please try again") << endl;
+            Pause();
+            break;
+        }
+    }
+}
+
+
+
+// Student Screen
+void StudentScreen(Student student, LinkedList<StudentTracker> studentTrackerList)
+{
+    stack<Course> dropStack;
+    int choice;
+    while (true)
+    {
+        system("cls");
+        cout << "\tWelcome to the Course Registraion System " << student.GetName() << endl;
+        cout << "1. Enroll in a course" << endl;
+        cout << "2. Drop a course" << endl;
+        cout << "3. View Student Data" << endl;
+        cout << "4. Go Back" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cout << endl;
+
+        switch (choice)
+        {
+
+        // Enroll in a course
+        case 1:
+            // Display the courses the student is already enrolled in
+            // Display the courses available for enrollment
+            // Ask the student to enter the course code
+            // Check if the student is already enrolled in the course
+            // Check if the student meets the prerequisites for the course
+            // Check if the course is full
+            // Enroll the student in the course
+            // Add the student to the student tracker
+            // Display a message indicating the student has been enrolled in the course
+            // Have a Stack that checks which courses were added
+            // Have an undo button that removes the last course added via checking the stack
+
+            break;
+
+        // Drop a course
+        case 2:
+            dropStack = CourseRemoval(student, studentTrackerList, dropStack);
+            break;
+
+        // View Student Data
+        case 3:
+            StudentInfo(student, studentTrackerList);
+            Pause();
+            break;
+
+        case 4:
+            return;
+            break;
+
+        default:
+            cout << FormatError("Invalid choice. Please try again") << endl;
+            Pause();
+            break;
         }
     }
 }
 
 int main()
 {
-    //prefileLoad();
-    // Load Data from Files into Variables
+    prefileLoad();
+    //  Load Data from Files into Variables
     FileManager fileManager;
     LinkedList<Student> studentList = fileManager.LoadStudents("students.dat");
     LinkedList<Course> courseList = fileManager.LoadCourses("courses.dat");
@@ -164,7 +367,8 @@ int main()
     int choice;
     while (true)
     {
-        cout << "Welcome to the Course Registration System!" << endl;
+        system("cls");
+        cout << "\tWelcome to the Course Registration System!" << endl;
         cout << "Please select an option:" << endl;
         cout << "1. Login as student" << endl;
         cout << "2. Login as admin" << endl;
@@ -175,19 +379,20 @@ int main()
         switch (choice)
         {
         case 1:
+        {
+            Student student = AuthenticateStudent(studentList);
+            if (student.GetId() != 0)
             {
-                Student student = AuthenticateStudent(studentList);
-                if (student.GetId() != 0)
-                {
-                    loadDisplay(student, studentTrackerList);
-                }
+                StudentScreen(student, studentTrackerList);
             }
-            break;
+        }
+        break;
 
         case 2:
-            if (!AuthenticateAdmin())
+            if (AuthenticateAdmin())
             {
-                cout << "Incorrect admin code. Please try again" << endl;
+                cout << "Debug run function" << endl;
+                Pause();
             }
             break;
 
@@ -197,7 +402,8 @@ int main()
             break;
 
         default:
-            cout << "Invalid choice. Please try again" << endl;
+            cout << FormatError("Invalid choice. Please try again") << endl;
+            Pause();
             break;
         }
     }
