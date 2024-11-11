@@ -58,8 +58,7 @@ public:
         this->next = next;
     }
 
-    // Optional: You could add a GetId() or GetCode() here if needed for searching
-    // int GetId() { return data.GetId(); }  // If T has GetId()
+    
 };
 
 #endif

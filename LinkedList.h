@@ -88,25 +88,34 @@ public:
 
     // Delete a node by ID
     void Remove(T data) {
-        if (!IsEmpty()) {
-            Node<T> *curr = head, *prev = NULL;
-            while (curr != NULL) {
-                if (curr->GetData() == data) {
-                    if (curr == head) {
-                        head = head->GetNext();
-                    } else {
-                        prev->SetNext(curr->GetNext());
-                    }
-                    delete curr;
-                    break;
-                }
-                prev = curr;
-                curr = curr->GetNext();
+    if (!IsEmpty()) { // Check if the list is not empty
+        Node<T>* curr = head;
+        Node<T>* prev = NULL;
+
+        // Check if the head node is the one to delete
+        if (head->GetData() == data) {
+            // Move the head pointer to the next node
+            curr = head;
+            head = head->GetNext(); // The second node becomes the new head
+            delete curr; // Delete the old head node
+            return; // Exit the function as we've handled the deletion
+        }
+
+        // If the head wasn't the node to delete, continue with traversal
+        while (curr != NULL) {
+            if (curr->GetData() == data) { // Node with matching data found
+                prev->SetNext(curr->GetNext()); // Bypass 'curr' by linking 'prev' to 'curr->GetNext()'
+                delete curr; // Delete the current node from memory
+                return; // Exit the function after deletion
             }
-        } else {
-            cerr << "The list is empty; there is nothing to delete!" << endl;
+            prev = curr; // Move prev to the current node
+            curr = curr->GetNext(); // Move curr to the next node
         }
     }
+}
+
+
+    
 
     // Display the list [MAY NEED TO CHANGE LATER]
     void DisplayList () {

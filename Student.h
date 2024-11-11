@@ -46,6 +46,7 @@ public:
     void SetIsPriority(bool IsPriority) { isPriority = IsPriority; }
     void SetEnrolledCourses(LinkedList<Course> EnrolledCourses) { enrolledCourses = EnrolledCourses; }
 
+    
     // Display student details
     void Display() const {
         cout << "ID: " << id << endl;
