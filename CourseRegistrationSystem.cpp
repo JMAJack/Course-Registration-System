@@ -191,13 +191,113 @@ void StudentInfo(Student student, LinkedList<StudentTracker> studentTrackerList)
         {
             Course course = student.GetEnrolledCourses().GetNode(i)->GetData();
             course.Display();
-            cout << endl;
+            cout << endl << endl;
         }
     }
 }
 
 
 // Course Enrollment Screen
+stack<Course> CourseEnrollment(Student student, LinkedList<StudentTracker> studentTrackerList, LinkedList<Course> courseList,
+ stack<Course> addStack)
+{
+    int choice;
+    while (true)
+    {
+        system("cls");
+        cout << "\tCourse Enrollment" << endl;
+        cout << "1. Enroll in a course" << endl;
+        cout << "2. Undo last enrollment" << endl;
+        cout << "3. Go Back" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cout << endl;
+
+        switch (choice)
+        {
+        case 1:
+        {
+            // Display the courses available for enrollment
+            cout << "Available Courses:" << endl;
+            for (int i = 0; i < student.GetEnrolledCourses().Size(); i++)
+            {
+                Course course = student.GetEnrolledCourses().GetNode(i)->GetData();
+                cout << i + 1 << ". ";
+                course.Display() ;
+                cout << endl;
+            }
+
+            // Ask the student to enter the course code
+            cout << "Enter the course code to enroll: ";
+            string courseCode;
+            cin >> courseCode;
+
+            // Check if the student is already enrolled in the course
+            Course course = FindCourse(student.GetEnrolledCourses(), courseCode);
+            if (course.GetCode() != "")
+            {
+                cout << FormatError("Course already enrolled.") << endl <<endl;
+                Pause();
+            }
+            else
+            {
+                // Check if the course exists in the course list
+                course = FindCourse(courseList, courseCode);
+                if (course.GetCode() == "")
+                {
+                    cout << FormatError("Course not found.") << endl;
+                    Pause();
+                }
+                else
+                {
+                    // Add the course to the student's enrolled courses
+                    student.GetEnrolledCourses().Insert(course);
+
+                    // Add the student to the student tracker
+                    StudentTracker tracker = FindStudentTracker(studentTrackerList, course);
+                    tracker.AddStudent(student);
+
+                    cout << "Course " << course.GetCode() << ": " << course.GetTitle() << " enrolled successfully." << endl;
+                    Pause();
+                }
+            }
+        }
+        break;
+
+        case 2:
+            if (!addStack.empty())
+            {
+                Course course = addStack.top();
+                addStack.pop();
+
+                // Remove the course from the student's enrolled courses
+                student.GetEnrolledCourses().Remove(course);
+
+                // Remove the student from the student tracker
+                StudentTracker tracker = FindStudentTracker(studentTrackerList, course);
+                tracker.RemoveStudent(student);
+
+                cout << "Last enrolled course " << course.GetCode() << ": " << course.GetTitle() << " removed successfully." << endl;
+                Pause();
+            }
+            else
+            {
+                cout << FormatError("No courses have been enrolled in the current session.") << endl;
+                Pause();
+            }
+            break;
+
+        case 3:
+            return addStack;
+            break;
+
+        default:
+            cout << FormatError("Invalid choice. Please try again") << endl;
+            Pause();
+            break;
+        }
+    }
+}
 
 
 // Course Removal Screen
@@ -296,9 +396,10 @@ stack<Course> CourseRemoval(Student student, LinkedList<StudentTracker> studentT
 
 
 // Student Screen
-void StudentScreen(Student student, LinkedList<StudentTracker> studentTrackerList)
+void StudentScreen(Student student, LinkedList<StudentTracker> studentTrackerList, LinkedList<Course> courseList)
 {
     stack<Course> dropStack;
+    stack<Course> addStack;
     int choice;
     while (true)
     {
@@ -317,18 +418,7 @@ void StudentScreen(Student student, LinkedList<StudentTracker> studentTrackerLis
 
         // Enroll in a course
         case 1:
-            // Display the courses the student is already enrolled in
-            // Display the courses available for enrollment
-            // Ask the student to enter the course code
-            // Check if the student is already enrolled in the course
-            // Check if the student meets the prerequisites for the course
-            // Check if the course is full
-            // Enroll the student in the course
-            // Add the student to the student tracker
-            // Display a message indicating the student has been enrolled in the course
-            // Have a Stack that checks which courses were added
-            // Have an undo button that removes the last course added via checking the stack
-
+            addStack = CourseEnrollment(student, studentTrackerList, courseList, addStack);
             break;
 
         // Drop a course
@@ -383,7 +473,7 @@ int main()
             Student student = AuthenticateStudent(studentList);
             if (student.GetId() != 0)
             {
-                StudentScreen(student, studentTrackerList);
+                StudentScreen(student, studentTrackerList, courseList);
             }
         }
         break;
