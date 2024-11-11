@@ -50,4 +50,4 @@ void DisplayFullCourseWaitlists(const vector<Course>& courses, bool isAdmin) {
         }
     }
 }
-}
+
