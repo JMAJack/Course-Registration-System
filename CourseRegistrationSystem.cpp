@@ -119,6 +119,12 @@ public:
         return "\033[31m" + message + "\033[0m"; // 31 is the ANSI code for red text
     }
 
+    string FormatCorrect(const string &message)
+    {
+        // Format correct messages in green text
+        return "\033[32m" + message + "\033[0m"; // 32 is the ANSI code for green text
+    }
+
     // Authentication functions
     bool AuthenticateAdmin()
     {
@@ -130,7 +136,7 @@ public:
         cin >> adminCode;
         if (adminCode == "admin123")
         {
-            cout << "Authentication successful." << endl;
+            cout << FormatCorrect("Authentication successful.") << endl;
             Pause();
             return true;
         }
@@ -156,6 +162,8 @@ public:
         Student student = FindStudent(studentId);
         if (student.GetId() != 0)
         {
+            cout << FormatCorrect("Authentication successful.") << endl;
+            Pause();
             return student;
         }
         else
@@ -281,8 +289,7 @@ public:
                         // Add the student to the student tracker
                         StudentTracker tracker = FindStudentTracker(course);
                         tracker.AddStudent(student);
-
-                        cout << "Course " << course.GetCode() << ": " << course.GetTitle() << " enrolled successfully." << endl;
+                        cout << FormatCorrect("Course enrolled successfully.") << endl;
                         Pause();
                     }
                 }
@@ -298,8 +305,7 @@ public:
                     student.GetEnrolledCourses().Remove(course);
                     StudentTracker tracker = FindStudentTracker(course);
                     tracker.RemoveStudent(student);
-
-                    cout << "Last enrolled course " << course.GetCode() << ": " << course.GetTitle() << " removed successfully." << endl;
+                    cout << FormatCorrect("Last enrollment undone.") << endl;
                     Pause();
                 }
                 else
@@ -373,8 +379,7 @@ public:
                     // Remove the student from the student tracker
                     StudentTracker tracker = FindStudentTracker(course);
                     tracker.RemoveStudent(student);
-
-                    cout << "Course " << course.GetCode() << ": " << course.GetTitle() << " dropped successfully." << endl;
+                    cout << FormatCorrect("Course dropped successfully.") << endl;
                     Pause();
                 }
             }
@@ -392,8 +397,7 @@ public:
                     // Add the student back to the student tracker
                     StudentTracker tracker = FindStudentTracker(course);
                     tracker.AddStudent(student);
-
-                    cout << "Last dropped course " << course.GetCode() << ": " << course.GetTitle() << " added back successfully." << endl;
+                    cout << FormatCorrect("Last drop undone.") << endl;
                     Pause();
                 }
                 else

@@ -117,14 +117,14 @@ public:
                 }
             }
             enrolledStudents.Insert(student);
-            cout << "Student " << student.GetName() << " added to " << course.GetTitle() << endl;
+            cout << "Student " << student.GetName() << " added to " << course.GetCode()<< ": "<< course.GetTitle() << endl;
         } else {
             if (student.GetIsPriority()) {
                 priorityQueue.push(student);
-                cout << "Student " << student.GetName() << " added to priority queue for " << course.GetTitle() << endl;
+                cout << "Student " << student.GetName() << " added to priority queue for " << course.GetCode()<< ": "<< course.GetTitle() << endl;
             } else {
                 waitlist.push(student);
-                cout << "Student " << student.GetName() << " added to waitlist for " << course.GetTitle() << endl;
+                cout << "Student " << student.GetName() << " added to waitlist for " << course.GetCode()<< ": "<< course.GetTitle() << endl;
             }
         }
     }
@@ -133,7 +133,7 @@ public:
         // if student is in enrolledStudents
         if (enrolledStudents.Search(student) != nullptr) {
             enrolledStudents.Remove(student);
-            cout << "Student " << student.GetName() << " removed from " << course.GetTitle() << endl;
+            cout << "Student " << student.GetName() << " removed from " << course.GetCode()<< ": "<< course.GetTitle() << endl;
             // if priorityQueue is not empty
             if (!priorityQueue.empty()) {
                 Student nextPriorityStudent = priorityQueue.front();
@@ -151,23 +151,23 @@ public:
         // if student is in priorityQueue
         else if (priorityQueue.front() == student) {
             priorityQueue.pop();
-            cout << "Student " << student.GetName() << " removed from priority queue for " << course.GetTitle() << endl;
+            cout << "Student " << student.GetName() << " removed from priority queue for " << course.GetCode()<< ": "<< course.GetTitle() << endl;
         }
 
         // if student is in waitlist
         else if (waitlist.front() == student) {
             waitlist.pop();
-            cout << "Student " << student.GetName() << " removed from waitlist for " << course.GetTitle() << endl;
+            cout << "Student " << student.GetName() << " removed from waitlist for " << course.GetCode()<< ": "<< course.GetTitle() << endl;
         }
     }
 
     void DisplayEnrolledStudents()  {
-        cout << "Students enrolled in " << course.GetTitle() << ":" << endl;
+        cout << "Students enrolled in " << course.GetCode()<< ": "<< course.GetTitle() << ":" << endl;
         enrolledStudents.DisplayList();
     }
 
     void DisplayWaitlist() const {
-        cout << "Waitlist for " << course.GetTitle() << ":" << endl;
+        cout << "Waitlist for " << course.GetCode()<< ": "<< course.GetTitle() << ":" << endl;
         queue<Student> tempWaitlist = waitlist;
         while (!tempWaitlist.empty()) {
             cout << tempWaitlist.front().GetName() << endl;
@@ -176,7 +176,7 @@ public:
     }
 
     void DisplayPriorityQueue() const {
-        cout << "Priority queue for " << course.GetTitle() << ":" << endl;
+        cout << "Priority queue for " << course.GetCode()<< ": "<< course.GetTitle() << ":" << endl;
         queue<Student> tempPriorityQueue = priorityQueue;
         while (!tempPriorityQueue.empty()) {
             cout << tempPriorityQueue.front().GetName() << endl;
