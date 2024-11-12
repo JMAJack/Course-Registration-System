@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include "Admin.h"
 #include "Course.h"
 #include "Student.h"
 #include "StudentTracker.h"
@@ -229,8 +228,8 @@ public:
             {
                 Course course = student.GetEnrolledCourses().GetNode(i)->GetData();
                 course.Display();
-                    cout << endl
-                         << endl;
+                cout << endl
+                     << endl;
             }
         }
 
@@ -390,6 +389,8 @@ public:
     {
         // Handle course removal for a student
         int choice;
+        bool inList = false;
+
         while (true)
         {
             system("cls");
@@ -424,6 +425,48 @@ public:
                                  << " (" << course.GetCredits() << " credits)" << endl;
                         }
                     }
+                    cout << endl;
+                }
+
+                if (student.GetIsPriority())
+                {
+                    cout << "Priority Queue: " << endl;
+                    for (int i = 0; i < courseList.Size(); i++)
+                    {
+                        Course course = courseList.GetNode(i)->GetData();
+                        StudentTracker tracker = FindStudentTracker(course);
+                        if (tracker.IsInPriorityQueue(student))
+                        {
+                            cout << course.GetCode() << ": " << course.GetTitle()
+                                 << " (" << course.GetCredits() << " credits)" << endl;
+                            inList = true;
+                        }
+                    }
+
+                    if (!inList)
+                    {
+                        cout << "No courses in Priority Queue" << endl;
+                    }
+                }
+                else
+                {
+                    cout << "Waitlist: " << endl;
+                    for (int i = 0; i < courseList.Size(); i++)
+                    {
+                        Course course = courseList.GetNode(i)->GetData();
+                        StudentTracker tracker = FindStudentTracker(course);
+                        if (tracker.IsInWaitlist(student))
+                        {
+                            cout << course.GetCode() << ": " << course.GetTitle()
+                                 << " (" << course.GetCredits() << " credits)" << endl;
+                            inList = true;
+                        }
+                    }
+
+                    if (!inList)
+                    {
+                        cout << "No courses in waitlist" << endl;
+                    }
                 }
 
                 // Ask the student to enter the course code
@@ -431,7 +474,41 @@ public:
                 string courseCode;
                 cin >> courseCode;
 
-                // Check if the student is already enrolled in the course
+                // Check if the student is in the priority queue or waitlist for course then remove them there
+                if (student.GetIsPriority())
+                {
+                    for (int i = 0; i < courseList.Size(); i++)
+                    {
+                        Course course = courseList.GetNode(i)->GetData();
+                        StudentTracker tracker = FindStudentTracker(course);
+                        if (tracker.IsInPriorityQueue(student) && course.GetCode() == courseCode)
+                        {
+                            dropStack.push(course);
+                            tracker.RemoveStudent(student);
+                            cout << FormatCorrect("Student removed from priority queue.") << endl;
+                            Pause();
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < courseList.Size(); i++)
+                    {
+                        Course course = courseList.GetNode(i)->GetData();
+                        StudentTracker tracker = FindStudentTracker(course);
+                        if (tracker.IsInWaitlist(student) && course.GetCode() == courseCode)
+                        {
+                            dropStack.push(course);
+                            tracker.RemoveStudent(student);
+                            cout << FormatCorrect("Student removed from waitlist.") << endl;
+                            Pause();
+                            break;
+                        }
+                    }
+                }
+
+                // Check if the course is in the student's enrolled courses
                 Course course = FindCourse(student, courseCode);
                 if (course.GetCode() == "")
                 {
