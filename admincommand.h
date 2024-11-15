@@ -53,6 +53,12 @@ void DisplayFullCourseWaitlists(const vector<Course>& courses, bool isAdmin) {
 
 //menu section
 
+#include <iostream>
+#include <vector>
+#include "Course.h"
+
+using namespace std;
+
 
 void AddCourse(vector<Course>& courses);
 void RemoveCourse(vector<Course>& courses);
@@ -60,6 +66,9 @@ void ModifyCourse(vector<Course>& courses);
 void DisplayAllCourses(const vector<Course>& courses);
 void DisplayStudentsInCourse(const vector<Course>& courses);
 void DisplayFullCourseWaitlists(const vector<Course>& courses);
+void AddStudentToCourse(vector<Course>& courses);
+void RemoveStudentFromCourse(vector<Course>& courses);
+void DisplayPriorityList(const vector<Course>& courses);
 
 void AdminMenu(vector<Course>& courses) {
     int choice;
@@ -90,18 +99,27 @@ void AdminMenu(vector<Course>& courses) {
                 DisplayAllCourses(courses);
                 break;
             case 5:
+                AddStudentToCourse(courses);
+                break;
+            case 6:    
+                RemoveStudentFromCourse(courses);
+                break;
+            case 7:    
                 DisplayStudentsInCourse(courses);
                 break;
-            case 6:
+            case 8:
                 DisplayFullCourseWaitlists(courses);
                 break;
-            case 7:
+            case 9:
+                DisplayPriorityList(courses);
+                break;
+            case 10:
                 cout << "Exiting Admin Menu.\n";
                 break;
             default:
                 cout << "Invalid choice. Please try again.\n";
         }
-    } while (choice != 7);
+    } while (choice != 10);
 }
 
 
@@ -174,6 +192,59 @@ void DisplayAllCourses(const vector<Course>& courses) {
     }
 }
 
+void AddStudentToCourse(vector<Course>& courses) {
+    string courseCode, studentName, studentID;
+    bool isPriority;
+
+    cout << "Enter course code: ";
+    cin >> courseCode;
+
+    for (auto& course : courses) {
+        if (course.GetCourseCode() == courseCode) {
+            cout << "Enter student ID: ";
+            cin >> studentID;
+            cout << "Enter student name: ";
+            cin.ignore();
+            getline(cin, studentName);
+
+            cout << "Is this a priority student? (1 for Yes, 0 for No): ";
+            cin >> isPriority;
+
+            Student newStudent(studentID, studentName);
+            course.AddStudent(newStudent, isPriority);
+
+            cout << "Student " << studentName << " added to the course " << course.GetTitle() << ".\n";
+            return;
+        }
+    }
+
+    cout << "Course with code " << courseCode << " not found.\n";
+}
+
+void RemoveStudentFromCourse(vector<Course>& courses) {
+    string courseCode, studentID;
+
+    cout << "Enter course code: ";
+    cin >> courseCode;
+
+    for (auto& course : courses) {
+        if (course.GetCourseCode() == courseCode) {
+            cout << "Enter student ID to remove: ";
+            cin >> studentID;
+
+            
+            Student studentToRemove(studentID, ""); 
+            course.RemoveStudent(studentToRemove);
+
+            cout << "Student removed from course " << course.GetTitle() << ".\n";
+            return;
+        }
+    }
+
+    cout << "Course with code " << courseCode << " not found.\n";
+}
+
+
 void DisplayStudentsInCourse(const vector<Course>& courses) {
     string courseCode;
     cout << "Enter course code: ";
@@ -197,3 +268,24 @@ void DisplayFullCourseWaitlists(const vector<Course>& courses) {
         }
     }
 }
+
+void DisplayPriorityList(const vector<Course>& courses) {
+    string courseCode;
+
+    cout << "Enter course code: ";
+    cin >> courseCode;
+
+    for (const auto& course : courses) {
+        if (course.GetCourseCode() == courseCode) {
+            cout << "Priority list for course " << course.GetTitle() << ":\n";
+            course.DisplayPriorityQueue();
+            return;
+        }
+    }
+
+    cout << "Course with code " << courseCode << " not found.\n";
+}
+
+
+
+
