@@ -79,9 +79,14 @@ void AdminMenu(vector<Course>& courses) {
         cout << "2. Remove Course\n";
         cout << "3. Modify Course\n";
         cout << "4. Display All Courses\n";
-        cout << "5. Display Students in a Specific Course\n";
-        cout << "6. Display Waitlists for Full Courses\n";
-        cout << "7. Exit Admin Menu\n";
+        cout << "5. Add Student to a Course\n";
+        cout << "6. Remove Student from a Course\n";
+        
+        cout << "7. Display Students in a Specific Course\n";
+        cout << "8. Edit Student Data\n";
+        cout << "9. Display Waitlists for Full Courses\n";
+        cout << "10. Display Priority List for a Course\n";
+        cout << "11. Exit Admin Menu\n";
         cout << "Enter your choice: ";
         cin >> choice;
 
@@ -108,18 +113,21 @@ void AdminMenu(vector<Course>& courses) {
                 DisplayStudentsInCourse(courses);
                 break;
             case 8:
+                EditStudentInCourse(courses);
+                break;
+            case 9:    
                 DisplayFullCourseWaitlists(courses);
                 break;
-            case 9:
+            case 10:
                 DisplayPriorityList(courses);
                 break;
-            case 10:
+            case 11:
                 cout << "Exiting Admin Menu.\n";
                 break;
             default:
                 cout << "Invalid choice. Please try again.\n";
         }
-    } while (choice != 10);
+    } while (choice != 11);
 }
 
 
@@ -260,6 +268,45 @@ void DisplayStudentsInCourse(const vector<Course>& courses) {
     cout << "Course not found.\n";
 }
 
+void EditStudentInCourse(vector<Course>& courses) {
+    string courseCode, studentID, newName, newID;
+    cout << "Enter course code: ";
+    cin >> courseCode;
+
+    
+    for (auto& course : courses) {
+        if (course.GetCourseCode() == courseCode) {
+            cout << "Enter student ID to edit: ";
+            cin >> studentID;
+
+            
+            for (auto& student : course.GetEnrolledStudents()) { 
+                if (student.GetID() == studentID) {
+                    
+                    cout << "Enter new student ID (or press Enter to skip): ";
+                    cin.ignore();
+                    getline(cin, newID);
+
+                    cout << "Enter new student name (or press Enter to skip): ";
+                    getline(cin, newName);
+
+                    if (!newID.empty()) student.SetID(newID);
+                    if (!newName.empty()) student.SetName(newName);
+
+                    cout << "Student data updated successfully.\n";
+                    return;
+                }
+            }
+
+            cout << "Student with ID " << studentID << " not found in the course.\n";
+            return;
+        }
+    }
+
+    cout << "Course with code " << courseCode << " not found.\n";
+}
+
+
 void DisplayFullCourseWaitlists(const vector<Course>& courses) {
     for (const auto& course : courses) {
         if (course.GetMaxCapacity() == course.GetMaxCapacity()) {
@@ -285,7 +332,6 @@ void DisplayPriorityList(const vector<Course>& courses) {
 
     cout << "Course with code " << courseCode << " not found.\n";
 }
-
 
 
 
