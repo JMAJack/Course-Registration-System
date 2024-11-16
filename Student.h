@@ -37,7 +37,7 @@ public:
     string GetName() const { return name; }
     float GetGPA() const { return gpa; }
     bool GetIsPriority() const { return isPriority; }
-    LinkedList<Course> GetEnrolledCourses() const { return enrolledCourses; }
+    LinkedList<Course>& GetEnrolledCourses() { return enrolledCourses; }
 
     // Mutators
     void SetId(int Id) { id = Id; }

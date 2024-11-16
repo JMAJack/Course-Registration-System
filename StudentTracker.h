@@ -131,7 +131,7 @@ public:
         }
     }
 
-    void RemoveStudent(Student student) {
+    void RemoveStudent(Student& student) {
         // if student is in enrolledStudents
         if (enrolledStudents.Search(student) != nullptr) {
             student.GetEnrolledCourses().Remove(course);

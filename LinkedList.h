@@ -116,6 +116,7 @@ public:
     // Special case: deleting the head node
     if (head->GetData() == data) {
         head = head->GetNext(); // Move head to the next node
+        curr->SetData(T());     // Set data to default value
         curr->SetNext(nullptr);      // Set curr to null
         return;
     }
