@@ -331,9 +331,6 @@ public:
                     {
                         addStack.push(course);
 
-                        // Add the course to the student's enrolled courses
-                        student.GetEnrolledCourses().Insert(course);
-
                         // Add the student to the student tracker
                         StudentTracker tracker = FindStudentTracker(course);
                         tracker.AddStudent(student);
@@ -359,7 +356,6 @@ public:
                     }
                     else
                     {
-                        student.GetEnrolledCourses().Remove(course);
                         StudentTracker tracker = FindStudentTracker(course);
                         tracker.RemoveStudent(student);
                         cout << FormatCorrect("Last enrollment undone.") << endl;
@@ -546,9 +542,6 @@ public:
                     }
                     else
                     {
-
-                        // Add the course back to the student's enrolled courses
-                        student.GetEnrolledCourses().Insert(course);
 
                         // Add the student back to the student tracker
                         StudentTracker tracker = FindStudentTracker(course);
