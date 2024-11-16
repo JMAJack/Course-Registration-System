@@ -58,7 +58,11 @@ public:
         this->next = next;
     }
 
-    
+    // Destructor
+    ~Node() {
+        next = NULL;
+    }
+
 };
 
 #endif

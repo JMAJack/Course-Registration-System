@@ -615,6 +615,7 @@ public:
 
     void MainMenu()
     {
+        prefileLoad();
         // Display the main menu with options
         int choice;
         while (true)

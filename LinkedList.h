@@ -33,7 +33,7 @@ public:
 
 
     // Insert at the back of the list
-    void Insert(T data)
+    void Insert(const T& data)
     {
         Node<T> *temp = new Node<T>(data);
         if (temp != NULL)
@@ -75,7 +75,7 @@ public:
     }
 
     // Search for a node based on type T
-    T *Search(T data)
+    T *Search(T& data)
     {
         Node<T> *curr = head;
         while (curr != nullptr)
@@ -104,30 +104,26 @@ public:
         return true;
     }
 
-  void Remove(T data) {
+  void Remove(const T& data) {
     if (IsEmpty()) {
-        std::cerr << "The list is empty; nothing to delete!" << std::endl;
+        cout << "List is Empty" << endl;
         return;
     }
 
-    Node<T>* curr = head;
+    auto curr = head;
     Node<T>* prev = nullptr;
 
     // Special case: deleting the head node
     if (head->GetData() == data) {
-        curr = head;
         head = head->GetNext(); // Move head to the next node
-        delete curr;            // Delete the original head
-        std::cout << "Deleted head node." << std::endl;
+        curr->SetNext(nullptr);      // Set curr to null
         return;
     }
 
     // Traverse the list to find the node to delete
     while (curr != nullptr) {
         if (curr->GetData() == data) { // Node with matching data found
-            if (prev != nullptr) {
-                prev->SetNext(curr->GetNext()); // Bypass 'curr' by linking 'prev' to 'curr->GetNext()'
-            }
+            prev->SetNext(curr->GetNext()); 
             delete curr; // Delete the current node
             return;
         }
