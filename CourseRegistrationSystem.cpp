@@ -230,8 +230,7 @@ public:
             {
                 Course course = student.GetEnrolledCourses().GetNode(i)->GetData();
                 course.Display();
-                cout << endl
-                     << endl;
+                cout << endl;
             }
         }
 
@@ -837,7 +836,9 @@ public:
                         {
                             prerequisites[i] = &prereq;
                         }
-                    }else{
+                    }
+                    else
+                    {
                         break;
                     }
                 }
@@ -962,11 +963,13 @@ public:
                                 {
                                     prerequisites[i] = &prereq;
                                 }
-                            }else{
+                            }
+                            else
+                            {
                                 break;
                             }
                         }
-                        
+
                         course.SetCode(newCode);
                         course.SetTitle(title);
                         course.SetCredits(credits);
@@ -1006,6 +1009,131 @@ public:
 
     void DatabaseScreen()
     {
+        // Option to view all courses
+        // Option to view all students
+        // Option to view all student trackers (Displaying students within the course [Enrolled, Waitlist, Priority Queue])
+
+        int choice;
+        while (true)
+        {
+            system("cls");
+
+            cout << "\tDatabase Screen" << endl;
+            cout << "1. View All Courses" << endl;
+            cout << "2. View All Students" << endl;
+            cout << "3. View All Students in a Course" << endl;
+            cout << "4. Go Back" << endl;
+            cout << "Enter your choice: ";
+            cin >> choice;
+
+            switch (choice)
+            {
+            case 1:
+                cout << endl;
+                cout << "Courses:" << endl;
+                for (int i = 0; i < courseList.Size(); i++)
+                {
+                    Course course = courseList.GetNode(i)->GetData();
+                    course.Display();
+                    cout << endl;
+                }
+                Pause();
+                break;
+
+            case 2:
+                cout << endl;
+                cout << "Students:" << endl;
+                for (int i = 0; i < studentList.Size(); i++)
+                {
+                    Student student = studentList.GetNode(i)->GetData();
+                    student.Display();
+                    cout << endl;
+                }
+                Pause();
+                break;
+
+            case 3:
+            {
+                // Display all courses and ask for course code
+                cout << endl;
+                cout << "Courses:" << endl;
+                for (int i = 0; i < courseList.Size(); i++)
+                {
+                    Course course = courseList.GetNode(i)->GetData();
+                    cout << "Course Code " << course.GetCode() << ": " << course.GetTitle() << endl;
+                }
+                cout << endl;
+
+                cout << "Enter the course code of the course you would like to view students for: ";
+                string code;
+                cin >> code;
+
+                Course course = FindCourse(code);
+                if (course.GetCode() == "")
+                {
+                    cout << FormatError("Course not found.") << endl;
+                }
+                else
+                {
+                    StudentTracker tracker = FindStudentTracker(course);
+                    cout << endl;
+                    cout << "Enrolled Students:" << endl;
+                    for (int i = 0; i < tracker.GetEnrolledStudents().Size(); i++)
+                    {
+                        Student student = tracker.GetEnrolledStudents().GetNode(i)->GetData();
+                        cout << "ID " << student.GetId() << ": " << student.GetName() << endl;
+                    }
+
+                    cout << endl;
+                    cout << "Waitlist:" << endl;
+                    if (tracker.GetWaitlist().empty())
+                    {
+                        cout << "No students in waitlist" << endl;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < tracker.GetWaitlist().size(); i++)
+                        {
+                            Student student = tracker.GetWaitlist().front();
+                            cout << "ID " << student.GetId() << ": " << student.GetName() << endl;
+                            tracker.GetWaitlist().pop();
+                            tracker.GetWaitlist().push(student);
+                            cout << endl;
+                        }
+                    }
+
+                    cout << endl;  
+                    cout << "Priority Queue:" << endl;
+                    if (tracker.GetPriorityQueue().empty())
+                    {
+                        cout << "No students in priority queue" << endl;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < tracker.GetPriorityQueue().size(); i++)
+                        {
+                            Student student = tracker.GetPriorityQueue().front();
+                            cout << "ID " << student.GetId() << ": " << student.GetName() << endl;
+                            tracker.GetPriorityQueue().pop();
+                            tracker.GetPriorityQueue().push(student);
+                            cout << endl;
+                        }
+                    }
+                }
+
+                Pause();
+                break;
+            }
+
+            case 4:
+                // go back
+                return;
+
+            default:
+                cout << FormatError("Invalid choice. Please try again") << endl;
+                Pause();
+            }
+        }
     }
 
     void AdminScreen()

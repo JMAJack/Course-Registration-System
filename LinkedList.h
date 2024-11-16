@@ -110,7 +110,7 @@ public:
             return;
         }
 
-        auto curr = head;
+        Node<T> *curr = head;
         Node<T> *prev = nullptr;
 
         // Special case: deleting the head node

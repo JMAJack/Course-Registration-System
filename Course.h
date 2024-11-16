@@ -74,6 +74,7 @@ public:
         if (isEmpty) {
             cout << "None";
         }
+        cout << endl;
     }
 
     bool operator==(const Course& c) const {
