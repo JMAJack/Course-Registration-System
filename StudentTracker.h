@@ -23,8 +23,8 @@ public:
         : course(course), enrolledStudents(enrolled), waitlist(wait), priorityQueue(priority) {}
 
     // Accessors
-    Course GetCourse() const { return course; }
-    LinkedList<Student> GetEnrolledStudents() const { return enrolledStudents; }
+    Course& GetCourse() { return course; }
+    LinkedList<Student>& GetEnrolledStudents() { return enrolledStudents; }
     queue<Student> GetWaitlist() const { return waitlist; }
     queue<Student> GetPriorityQueue() const { return priorityQueue; }
 
@@ -38,6 +38,7 @@ public:
         cout << "Waitlist: " << waitlist.size() << endl;
         cout << "Priority Queue: " << priorityQueue.size() << endl;
     }
+    
 
     // Serialize the StudentTracker data to a binary file
     void Serialize(ofstream& outFile) const {
@@ -116,6 +117,7 @@ public:
                     }
                 }
             }
+            student.GetEnrolledCourses().Insert(course);
             enrolledStudents.Insert(student);
             cout << "Student " << student.GetName() << " added to " << course.GetCode()<< ": "<< course.GetTitle() << endl;
         } else {
@@ -129,9 +131,10 @@ public:
         }
     }
 
-    void RemoveStudent(Student student) {
+    void RemoveStudent(Student& student) {
         // if student is in enrolledStudents
         if (enrolledStudents.Search(student) != nullptr) {
+            student.GetEnrolledCourses().Remove(course);
             enrolledStudents.Remove(student);
             cout << "Student " << student.GetName() << " removed from " << course.GetCode()<< ": "<< course.GetTitle() << endl;
             // if priorityQueue is not empty
@@ -182,6 +185,28 @@ public:
             cout << tempPriorityQueue.front().GetName() << endl;
             tempPriorityQueue.pop();
         }
+    }
+
+    bool IsInPriorityQueue(Student student) const {
+        queue<Student> tempPriorityQueue = priorityQueue;
+        while (!tempPriorityQueue.empty()) {
+            if (tempPriorityQueue.front() == student) {
+                return true;
+            }
+            tempPriorityQueue.pop();
+        }
+        return false;
+    }
+
+    bool IsInWaitlist(Student student) const {
+        queue<Student> tempWaitlist = waitlist;
+        while (!tempWaitlist.empty()) {
+            if (tempWaitlist.front() == student) {
+                return true;
+            }
+            tempWaitlist.pop();
+        }
+        return false;
     }
 };
 

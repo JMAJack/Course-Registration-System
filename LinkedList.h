@@ -5,16 +5,17 @@
 #include "Node.h"
 #include "Course.h"
 // Use templates to allow the class to work with any data type (e.g., Student, Course, etc.)
-//Example:
-//LinkedList<Student> studentList;
-//LinkedList<Course> courseList;
+// Example:
+// LinkedList<Student> studentList;
+// LinkedList<Course> courseList;
 
 //<T> is a placeholder for the data type that will be used with the LinkedList
 
 template <class T>
-class LinkedList {
+class LinkedList
+{
 private:
-    Node<T> *head;  // Template node
+    Node<T> *head; // Template node
 
 public:
     // Default constructor
@@ -29,18 +30,29 @@ public:
     // Mutators
     void SetHead(Node<T> *h) { head = h; }
 
+
+
     // Insert at the back of the list
-    void Insert(T data) {
+    void Insert(const T& data)
+    {
         Node<T> *temp = new Node<T>(data);
-        if (temp != NULL) {
-            if (IsFull()) {
+        if (temp != NULL)
+        {
+            if (IsFull())
+            {
                 cerr << "List is full, Data cannot be added" << endl;
-            } else {
-                if (IsEmpty()) {
+            }
+            else
+            {
+                if (IsEmpty())
+                {
                     head = temp;
-                } else {
+                }
+                else
+                {
                     Node<T> *curr = head;
-                    while (curr->GetNext() != NULL) {
+                    while (curr->GetNext() != NULL)
+                    {
                         curr = curr->GetNext();
                     }
                     curr->SetNext(temp);
@@ -50,10 +62,12 @@ public:
     }
 
     // Count the number of nodes
-    int Size() const{
+    int Size() const
+    {
         int count = 0;
         Node<T> *curr = head;
-        while (curr != NULL) {
+        while (curr != NULL)
+        {
             count++;
             curr = curr->GetNext();
         }
@@ -61,81 +75,98 @@ public:
     }
 
     // Search for a node based on type T
-    T* Search(T data) {
+    T *Search(const T& data)
+    {
         Node<T> *curr = head;
-        while (curr != nullptr) {
-            if (curr->GetData() == data) {  
+        while (curr != nullptr)
+        {
+            if (curr->GetData() == data)
+            {
                 return &curr->GetData();
             }
             curr = curr->GetNext();
         }
-        return nullptr;  // Return default-constructed object if not found
+        return nullptr; // Return default-constructed object if not found
     }
-
 
     // Check if the list is empty
     bool IsEmpty() { return head == NULL; }
 
     // Check if the list is full (memory allocation fails)
-    bool IsFull() {
+    bool IsFull()
+    {
         Node<T> *temp = new Node<T>;
-        if (temp != NULL) {
+        if (temp != NULL)
+        {
             delete temp;
             return false;
         }
         return true;
     }
 
-    // Delete a node by ID
-    void Remove(T data) {
-        if (!IsEmpty()) {
-            Node<T> *curr = head, *prev = NULL;
-            while (curr != NULL) {
-                if (curr->GetData() == data) {
-                    if (curr == head) {
-                        head = head->GetNext();
-                    } else {
-                        prev->SetNext(curr->GetNext());
-                    }
-                    delete curr;
-                    break;
-                }
-                prev = curr;
-                curr = curr->GetNext();
-            }
-        } else {
-            cerr << "The list is empty; there is nothing to delete!" << endl;
-        }
+  void Remove(const T& data) {
+    if (IsEmpty()) {
+        cout << "List is Empty" << endl;
+        return;
     }
 
+    auto curr = head;
+    Node<T>* prev = nullptr;
+
+    // Special case: deleting the head node
+    if (head->GetData() == data) {
+        head = head->GetNext(); // Move head to the next node
+        delete curr;
+        return;
+    }
+
+    // Traverse the list to find the node to delete
+    while (curr != nullptr) {
+        if (curr->GetData() == data) { // Node with matching data found
+            prev->SetNext(curr->GetNext()); 
+            delete curr; // Delete the current node
+            return;
+        }
+        prev = curr;            // Move prev to the current node
+        curr = curr->GetNext(); // Move curr to the next node
+    }
+
+}
+
+
+
     // Display the list [MAY NEED TO CHANGE LATER]
-    void DisplayList () {
+    void DisplayList()
+    {
         Node<T> *curr = head;
-        if (!IsEmpty()) {
-            while (curr != NULL) {
-                curr->GetData().Display();  // Assuming T has a Display method
+        if (!IsEmpty())
+        {
+            while (curr != NULL)
+            {
+                curr->GetData().Display(); // Assuming T has a Display method
                 curr = curr->GetNext();
             }
-        } else {
+        }
+        else
+        {
             cout << "List is empty" << endl;
         }
     }
 
-    //Get node based on index
-    Node<T>* GetNode(int index) {
-        Node<T> *curr = head;
-        int count = 0;
-        while (curr != NULL) {
-            if (count == index) {
-                return curr;
-            }
-            count++;
-            curr = curr->GetNext();
+    // Get node based on index
+   Node<T>* GetNode(int index) {
+    Node<T>* curr = head;
+    int count = 0;
+    while (curr != nullptr) {
+        if (count == index) {
+            return curr; // Return a pointer to the node
         }
-        return NULL;
+        count++;
+        curr = curr->GetNext();
     }
+    return nullptr;
+}
 
-    
 };
 
 #endif

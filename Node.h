@@ -23,13 +23,13 @@ public:
     }
 
     // Primary Constructor
-    Node(T data) {
+    Node(const T& data) {
         this->data = data;
         this->next = NULL;
     }
 
     // Primary Constructor with Next Node
-    Node(T data, Node<T>* next) {
+    Node(const T& data, Node<T>* next) {
         this->data = data;
         this->next = next;
     }
@@ -50,7 +50,7 @@ public:
     }
 
     // Mutators
-    void SetData(T data) {
+    void SetData(const T& data) {
         this->data = data;
     }
 
@@ -58,8 +58,11 @@ public:
         this->next = next;
     }
 
-    // Optional: You could add a GetId() or GetCode() here if needed for searching
-    // int GetId() { return data.GetId(); }  // If T has GetId()
+    // Destructor
+    ~Node() {
+        next = NULL;
+    }
+
 };
 
 #endif
