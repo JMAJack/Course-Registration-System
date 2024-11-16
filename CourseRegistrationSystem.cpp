@@ -1,12 +1,14 @@
 #include <iostream>
 #include <fstream>
+#include <stack>
+#include <string>
+
 #include "Course.h"
 #include "Student.h"
 #include "StudentTracker.h"
 #include "FileManager.h"
 #include "LinkedList.h"
 #include "Node.h"
-#include <stack>
 
 using namespace std;
 
@@ -73,7 +75,7 @@ public:
         return Course();
     }
 
-    Course FindCourse(Student student, string courseCode)
+    Course FindCourse(Student &student, string courseCode)
     {
         // Find a course by code in a student's enrolled courses
         Node<Course> *curr = student.GetEnrolledCourses().GetHead();
@@ -88,7 +90,7 @@ public:
         return Course();
     }
 
-    StudentTracker FindStudentTracker(Course course)
+    StudentTracker FindStudentTracker(Course &course)
     {
         // Find a student tracker by course
         Node<StudentTracker> *curr = studentTrackerList.GetHead();
@@ -204,7 +206,7 @@ public:
     }
 
     // Course Registration functions
-    void StudentInfo(Student& student)
+    void StudentInfo(Student &student)
     {
         StudentTracker tracker;
         bool inList = false;
@@ -278,7 +280,7 @@ public:
         }
     }
 
-    void CourseEnrollment(Student& student)
+    void CourseEnrollment(Student &student)
     {
         // Handle course enrollment for a student
         int choice;
@@ -381,7 +383,7 @@ public:
         }
     }
 
-    void CourseRemoval(Student& student)
+    void CourseRemoval(Student &student)
     {
         // Handle course removal for a student
         int choice;
@@ -473,36 +475,25 @@ public:
                 cin >> courseCode;
 
                 // Check if the student is in the priority queue or waitlist for course then remove them there
-                if (student.GetIsPriority())
+                for (int i = 0; i < courseList.Size(); i++)
                 {
-                    for (int i = 0; i < courseList.Size(); i++)
+                    Course course = courseList.GetNode(i)->GetData();
+                    StudentTracker tracker = FindStudentTracker(course);
+                    if (tracker.IsInPriorityQueue(student) && course.GetCode() == courseCode)
                     {
-                        Course course = courseList.GetNode(i)->GetData();
-                        StudentTracker tracker = FindStudentTracker(course);
-                        if (tracker.IsInPriorityQueue(student) && course.GetCode() == courseCode)
-                        {
-                            dropStack.push(course);
-                            tracker.RemoveStudent(student);
-                            cout << FormatCorrect("Student removed from priority queue.") << endl;
-                            Pause();
-                            break;
-                        }
+                        dropStack.push(course);
+                        tracker.RemoveStudent(student);
+                        cout << FormatCorrect("Student removed from priority queue.") << endl;
+                        Pause();
+                        break;
                     }
-                }
-                else
-                {
-                    for (int i = 0; i < courseList.Size(); i++)
+                    else if (tracker.IsInWaitlist(student) && course.GetCode() == courseCode)
                     {
-                        Course course = courseList.GetNode(i)->GetData();
-                        StudentTracker tracker = FindStudentTracker(course);
-                        if (tracker.IsInWaitlist(student) && course.GetCode() == courseCode)
-                        {
-                            dropStack.push(course);
-                            tracker.RemoveStudent(student);
-                            cout << FormatCorrect("Student removed from waitlist.") << endl;
-                            Pause();
-                            break;
-                        }
+                        dropStack.push(course);
+                        tracker.RemoveStudent(student);
+                        cout << FormatCorrect("Student removed from waitlist.") << endl;
+                        Pause();
+                        break;
                     }
                 }
 
@@ -569,7 +560,7 @@ public:
         }
     }
 
-    void StudentScreen(Student& student)
+    void StudentScreen(Student &student)
     {
         // Display the student screen with options
         int choice;
@@ -608,6 +599,456 @@ public:
         }
     }
 
+    void StudentManagementScreen()
+    {
+        // Options to add, remove or modify students
+
+        int choice;
+        while (true)
+        {
+            system("cls");
+
+            cout << "\tStudent Management Panel" << endl;
+            cout << "1. Add Student" << endl;
+            cout << "2. Remove Student" << endl;
+            cout << "3. Modify Student" << endl;
+            cout << "4. Go Back" << endl;
+            cout << "Enter your choice: ";
+            cin >> choice;
+
+            switch (choice)
+            {
+            case 1:
+            {
+                // Ask for student details and add student
+                Student student;
+                cout << "Enter student ID: ";
+                int id;
+                cin >> id;
+
+                cout << "Enter student name: ";
+                string name;
+                cin.ignore();
+                getline(cin, name); // clearing buffer and getting the whole line
+
+                cout << "Enter student GPA: ";
+                float gpa;
+                cin >> gpa;
+
+                student.SetId(id);
+                student.SetName(name);
+                student.SetGPA(gpa);
+
+                Student checkStudent = FindStudent(id);
+                // Student already exists
+                if (checkStudent.GetId() == id)
+                {
+                    cout << FormatError("Student already exists.") << endl;
+                }
+                else
+                {
+
+                    studentList.Insert(student);
+                    cout << FormatCorrect("Student added successfully.") << endl;
+                }
+
+                Pause();
+                break;
+            }
+
+            case 2:
+            {
+                // Display students (ID and Name) and ask for ID to remove
+
+                cout << "Students:" << endl;
+                for (int i = 0; i < studentList.Size(); i++)
+                {
+                    Student student = studentList.GetNode(i)->GetData();
+                    cout << "ID " << student.GetId() << ": " << student.GetName() << endl;
+                }
+                cout << endl;
+                cout << "Enter student ID of the student you would like to remove: ";
+                int id;
+                cin >> id;
+
+                Student student = FindStudent(id);
+                if (student.GetId() == 0)
+                {
+                    cout << FormatError("Student not found.") << endl;
+                }
+                else
+                {
+                    // Check if student is enrolled in any courses, or is in the waitlist or priority queue
+                    // for any courses and remove student from them accordingly
+                    for (int i = 0; i < courseList.Size(); i++)
+                    {
+                        Course course = courseList.GetNode(i)->GetData();
+                        StudentTracker tracker = FindStudentTracker(course);
+                        tracker.RemoveStudent(student);
+                    }
+
+                    studentList.Remove(student);
+                    cout << FormatCorrect("Student removed successfully.") << endl;
+                }
+
+                Pause();
+                break;
+            }
+
+            case 3:
+            {
+                // Display students (ID and Name) and ask for ID to modify
+
+                cout << "Students:" << endl;
+                for (int i = 0; i < studentList.Size(); i++)
+                {
+                    Student student = studentList.GetNode(i)->GetData();
+                    cout << "ID " << student.GetId() << ": " << student.GetName() << endl;
+                }
+                cout << endl;
+                cout << "Enter the student ID of the student you would like to modify: ";
+                int id;
+                cin >> id;
+
+                Student check = FindStudent(id);
+                if (check.GetId() == 0)
+                {
+                    cout << FormatError("Student not found.") << endl;
+                }
+                else
+                {
+                    Student student = FindStudent(id);
+                    // Ask for new student details and modify student
+                    cout << "Enter new or current student id: ";
+                    int newId;
+                    cin >> newId;
+                    Student temp = FindStudent(newId);
+                    // Check if the new ID is unique or the current ID of the student being modified
+                    if (temp == check || temp.GetId() == 0)
+                    {
+                        cout << "Enter new or current student name: ";
+                        string name;
+                        cin.ignore();
+                        getline(cin, name);
+                        cout << "Enter new or current student GPA: ";
+                        float gpa;
+                        cin >> gpa;
+                        student.SetId(newId);
+                        student.SetName(name);
+                        student.SetGPA(gpa);
+
+                        // Update the student in the queues and waitlists
+                        for (int i = 0; i < courseList.Size(); i++)
+                        {
+                            Course course = courseList.GetNode(i)->GetData();
+                            StudentTracker tracker = FindStudentTracker(course);
+                            if (tracker.IsInPriorityQueue(check))
+                            {
+                                tracker.RemoveStudent(check);
+                                tracker.AddStudent(student);
+                            }
+                            else if (tracker.IsInWaitlist(check))
+                            {
+                                tracker.RemoveStudent(check);
+                                tracker.AddStudent(student);
+                            }
+                        }
+
+                        studentList.EditNode(check, student);
+
+                        cout << FormatCorrect("Student modified successfully.") << endl;
+                    }
+                    else
+                    {
+                        cout << FormatError("Student ID must be new or the current ID of the Student you are modifying.") << endl;
+                    }
+                }
+                Pause();
+                break;
+            }
+
+            case 4:
+                // go back
+                return;
+
+            default:
+                cout << FormatError("Invalid choice. Please try again") << endl;
+                Pause();
+            }
+        }
+    }
+
+    void CourseManagementScreen()
+    {
+        // Options to add, remove or modify courses
+
+        int choice;
+        while (true)
+        {
+            system("cls");
+
+            cout << "\tCourse Management Panel" << endl;
+            cout << "1. Add Course" << endl;
+            cout << "2. Remove Course" << endl;
+            cout << "3. Modify Course" << endl;
+            cout << "4. Go Back" << endl;
+            cout << "Enter your choice: ";
+            cin >> choice;
+
+            switch (choice)
+            {
+            case 1:
+            {
+                // Ask for course details and add course
+                Course course;
+                cout << "Enter course code: ";
+                string code;
+                cin >> code;
+
+                cout << "Enter course title: ";
+                string title;
+                cin.ignore();
+                getline(cin, title);
+
+                cout << "Enter course credits: ";
+                int credits;
+                cin >> credits;
+
+                cout << "Enter course max capacity: ";
+                int maxCapacity;
+                cin >> maxCapacity;
+
+                // Enter prerequisites if any
+                Course *prerequisites[2] = {nullptr, nullptr};
+                string prereqCode;
+                for (int i = 0; i < 2; i++)
+                {
+                    cout << "Enter prerequisite course code " << i + 1 << " (or Enter 'None'): ";
+                    cin >> prereqCode;
+                    if (prereqCode != "None")
+                    {
+                        Course prereq = FindCourse(prereqCode);
+                        if (prereq.GetCode() == "")
+                        {
+                            cout << FormatError("Prerequisite course not found.") << endl;
+                            i--;
+                        }
+                        else
+                        {
+                            prerequisites[i] = &prereq;
+                        }
+                    }else{
+                        break;
+                    }
+                }
+
+                course.SetCode(code);
+                course.SetTitle(title);
+                course.SetCredits(credits);
+                course.SetMaxCapacity(maxCapacity);
+                course.SetPrerequisites(prerequisites);
+
+                Course checkCourse = FindCourse(code);
+                // Course already exists
+                if (checkCourse.GetCode() == code)
+                {
+                    cout << FormatError("Course already exists.") << endl;
+                }
+                else
+                {
+                    courseList.Insert(course);
+                    cout << FormatCorrect("Course added successfully.") << endl;
+                }
+
+                Pause();
+                break;
+            }
+
+            case 2:
+            {
+                // Display courses (Code and Title) and ask for Code to remove
+
+                cout << "Courses:" << endl;
+                for (int i = 0; i < courseList.Size(); i++)
+                {
+                    Course course = courseList.GetNode(i)->GetData();
+                    cout << "Course Code " << course.GetCode() << ": " << course.GetTitle() << endl;
+                }
+                cout << endl;
+                cout << "Enter course code of the course you would like to remove: ";
+                string code;
+                cin >> code;
+
+                Course course = FindCourse(code);
+                if (course.GetCode() == "")
+                {
+                    cout << FormatError("Course not found.") << endl;
+                }
+                else
+                {
+                    StudentTracker tracker = FindStudentTracker(course);
+                    // Check if any students are enrolled in the course and remove them
+                    for (int i = 0; i < tracker.GetEnrolledStudents().Size(); i++)
+                    {
+                        Student student = tracker.GetEnrolledStudents().GetNode(i)->GetData();
+                        student.GetEnrolledCourses().Remove(course);
+                    }
+
+                    courseList.Remove(course);
+                    cout << FormatCorrect("Course removed successfully.") << endl;
+                }
+                Pause();
+                break;
+            }
+
+            case 3:
+            {
+                // Display courses (Code and Title) and ask for Code to modify
+
+                cout << "Courses:" << endl;
+                for (int i = 0; i < courseList.Size(); i++)
+                {
+                    Course course = courseList.GetNode(i)->GetData();
+                    cout << "Course Code " << course.GetCode() << ": " << course.GetTitle() << endl;
+                }
+                cout << endl;
+                cout << "Enter the course code of the course you would like to modify: ";
+                string code;
+                cin >> code;
+
+                Course check = FindCourse(code);
+                if (check.GetCode() == "")
+                {
+                    cout << FormatError("Course not found.") << endl;
+                }
+                else
+                {
+                    Course course = FindCourse(code);
+                    // Ask for new course details and modify course
+                    cout << "Enter new or current course code: ";
+                    string newCode;
+                    cin >> newCode;
+                    Course temp = FindCourse(newCode);
+                    // Check if the new code is unique or the current code of the course being modified
+                    if (temp == check || temp.GetCode() == "")
+                    {
+                        cout << "Enter new or current course title: ";
+                        string title;
+                        cin.ignore();
+                        getline(cin, title);
+                        cout << "Enter new or current course credits: ";
+                        int credits;
+                        cin >> credits;
+                        cout << "Enter new or current course max capacity: ";
+                        int maxCapacity;
+                        cin >> maxCapacity;
+
+                        // Enter prerequisites if any
+                        Course *prerequisites[2] = {nullptr, nullptr};
+                        string prereqCode;
+                        for (int i = 0; i < 2; i++)
+                        {
+                            cout << "Enter prerequisite course code " << i + 1 << " (or Enter 'None'): ";
+                            cin >> prereqCode;
+                            if (prereqCode != "None")
+                            {
+                                Course prereq = FindCourse(prereqCode);
+                                if (prereq.GetCode() == "")
+                                {
+                                    cout << FormatError("Prerequisite course not found.") << endl;
+                                    i--;
+                                }
+                                else
+                                {
+                                    prerequisites[i] = &prereq;
+                                }
+                            }else{
+                                break;
+                            }
+                        }
+                        
+                        course.SetCode(newCode);
+                        course.SetTitle(title);
+                        course.SetCredits(credits);
+                        course.SetMaxCapacity(maxCapacity);
+                        course.SetPrerequisites(prerequisites);
+
+                        StudentTracker tracker = FindStudentTracker(check);
+                        tracker.SetCourse(course);
+                        for (int i = 0; i < tracker.GetEnrolledStudents().Size(); i++)
+                        {
+                            tracker.GetEnrolledStudents().GetNode(i)->GetData().GetEnrolledCourses().EditNode(check, course);
+                        }
+
+                        courseList.EditNode(check, course);
+
+                        cout << FormatCorrect("Course modified successfully.") << endl;
+                    }
+                    else
+                    {
+                        cout << FormatError("Course code must be new or the current code of the Course you are modifying.") << endl;
+                    }
+                }
+                Pause();
+                break;
+            }
+
+            case 4:
+                // go back
+                return;
+
+            default:
+                cout << FormatError("Invalid choice. Please try again") << endl;
+                Pause();
+            }
+        }
+    }
+
+    void DatabaseScreen()
+    {
+    }
+
+    void AdminScreen()
+    {
+        // Display the admin screen with options
+        // Option to add, remove or modify courses (new screen)
+        // Option to add, remove or modify students (new screen)
+        // Option to view all courses (and students in those courses or in the queue or waitlist for other courses)
+        // And students
+
+        int choice;
+        while (true)
+        {
+            system("cls");
+
+            cout << "\tWelcome to the Admin Panel!" << endl;
+            cout << "1. View Student Management" << endl;
+            cout << "2. View Course Management" << endl;
+            cout << "3. View Database" << endl;
+            cout << "4. Go Back" << endl;
+            cout << "Enter your choice: ";
+            cin >> choice;
+
+            switch (choice)
+            {
+            case 1:
+                StudentManagementScreen();
+                break;
+            case 2:
+                CourseManagementScreen();
+                break;
+            case 3:
+                DatabaseScreen();
+                break;
+            case 4:
+                return;
+            default:
+                cout << FormatError("Invalid choice. Please try again") << endl;
+                Pause();
+            }
+        }
+    }
+
     void MainMenu()
     {
         // Display the main menu with options
@@ -639,8 +1080,7 @@ public:
             case 2:
                 if (AuthenticateAdmin())
                 {
-                    cout << "Admin access granted." << endl;
-                    Pause();
+                    AdminScreen();
                 }
                 break;
 

@@ -16,7 +16,10 @@ private:
 
 public:
     // Default constructor
-    StudentTracker() {}
+    StudentTracker() {
+        course = Course();
+        enrolledStudents = LinkedList<Student>();
+    }
 
     // Parameterized constructor
     StudentTracker(const Course& course, const LinkedList<Student>& enrolled, const queue<Student>& wait, const queue<Student>& priority)
@@ -152,14 +155,26 @@ public:
         }
 
         // if student is in priorityQueue
-        else if (priorityQueue.front() == student) {
-            priorityQueue.pop();
+        else if (IsInPriorityQueue(student)) {
+            queue<Student> tempPriorityQueue;
+            while (!priorityQueue.empty()) {
+                if (priorityQueue.front() != student) {
+                    tempPriorityQueue.push(priorityQueue.front());
+                }
+                priorityQueue.pop();
+            }
             cout << "Student " << student.GetName() << " removed from priority queue for " << course.GetCode()<< ": "<< course.GetTitle() << endl;
         }
 
         // if student is in waitlist
-        else if (waitlist.front() == student) {
-            waitlist.pop();
+        else if (IsInWaitlist(student)) {
+            queue<Student> tempWaitlist;
+            while (!waitlist.empty()) {
+                if (waitlist.front() != student) {
+                    tempWaitlist.push(waitlist.front());
+                }
+                waitlist.pop();
+            }
             cout << "Student " << student.GetName() << " removed from waitlist for " << course.GetCode()<< ": "<< course.GetTitle() << endl;
         }
     }
@@ -208,6 +223,9 @@ public:
         }
         return false;
     }
+
+
+
 };
 
 #endif // STUDENTTRACKER_H

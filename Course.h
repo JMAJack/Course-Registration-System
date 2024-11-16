@@ -52,6 +52,10 @@ public:
 
     Course* GetPrerequisites(int index) const { return prerequisites[index]; }
     void SetPrerequisites(int index, Course* prereq) { prerequisites[index] = prereq; }
+    void SetPrerequisites(Course* prereqs[2]) {
+        prerequisites[0] = prereqs[0];
+        prerequisites[1] = prereqs[1];
+    }
 
     // Display course details
     void Display() const {

@@ -30,10 +30,8 @@ public:
     // Mutators
     void SetHead(Node<T> *h) { head = h; }
 
-
-
     // Insert at the back of the list
-    void Insert(const T& data)
+    void Insert(const T &data)
     {
         Node<T> *temp = new Node<T>(data);
         if (temp != NULL)
@@ -75,7 +73,7 @@ public:
     }
 
     // Search for a node based on type T
-    T *Search(const T& data)
+    T *Search(const T &data)
     {
         Node<T> *curr = head;
         while (curr != nullptr)
@@ -104,36 +102,52 @@ public:
         return true;
     }
 
-  void Remove(const T& data) {
-    if (IsEmpty()) {
-        cout << "List is Empty" << endl;
-        return;
-    }
-
-    auto curr = head;
-    Node<T>* prev = nullptr;
-
-    // Special case: deleting the head node
-    if (head->GetData() == data) {
-        head = head->GetNext(); // Move head to the next node
-        delete curr;
-        return;
-    }
-
-    // Traverse the list to find the node to delete
-    while (curr != nullptr) {
-        if (curr->GetData() == data) { // Node with matching data found
-            prev->SetNext(curr->GetNext()); 
-            delete curr; // Delete the current node
+    void Remove(const T &data)
+    {
+        if (IsEmpty())
+        {
+            cout << "List is Empty" << endl;
             return;
         }
-        prev = curr;            // Move prev to the current node
-        curr = curr->GetNext(); // Move curr to the next node
+
+        auto curr = head;
+        Node<T> *prev = nullptr;
+
+        // Special case: deleting the head node
+        if (head->GetData() == data)
+        {
+            head = head->GetNext(); // Move head to the next node
+            delete curr;
+            return;
+        }
+
+        // Traverse the list to find the node to delete
+        while (curr != nullptr)
+        {
+            if (curr->GetData() == data)
+            { // Node with matching data found
+                prev->SetNext(curr->GetNext());
+                delete curr; // Delete the current node
+                return;
+            }
+            prev = curr;            // Move prev to the current node
+            curr = curr->GetNext(); // Move curr to the next node
+        }
     }
 
-}
-
-
+    void EditNode(const T &data, const T &newData)
+    {
+        Node<T> *curr = head;
+        while (curr != nullptr)
+        {
+            if (curr->GetData() == data)
+            {
+                curr->SetData(newData);
+                return;
+            }
+            curr = curr->GetNext();
+        }
+    }
 
     // Display the list [MAY NEED TO CHANGE LATER]
     void DisplayList()
@@ -154,19 +168,21 @@ public:
     }
 
     // Get node based on index
-   Node<T>* GetNode(int index) {
-    Node<T>* curr = head;
-    int count = 0;
-    while (curr != nullptr) {
-        if (count == index) {
-            return curr; // Return a pointer to the node
+    Node<T> *GetNode(int index)
+    {
+        Node<T> *curr = head;
+        int count = 0;
+        while (curr != nullptr)
+        {
+            if (count == index)
+            {
+                return curr; // Return a pointer to the node
+            }
+            count++;
+            curr = curr->GetNext();
         }
-        count++;
-        curr = curr->GetNext();
+        return nullptr;
     }
-    return nullptr;
-}
-
 };
 
 #endif
