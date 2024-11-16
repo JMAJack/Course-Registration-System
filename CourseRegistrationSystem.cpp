@@ -204,7 +204,7 @@ public:
     }
 
     // Course Registration functions
-    void StudentInfo(Student student)
+    void StudentInfo(Student& student)
     {
         StudentTracker tracker;
         bool inList = false;
@@ -278,7 +278,7 @@ public:
         }
     }
 
-    void CourseEnrollment(Student student)
+    void CourseEnrollment(Student& student)
     {
         // Handle course enrollment for a student
         int choice;
@@ -385,7 +385,7 @@ public:
         }
     }
 
-    void CourseRemoval(Student student)
+    void CourseRemoval(Student& student)
     {
         // Handle course removal for a student
         int choice;
@@ -446,6 +446,7 @@ public:
                     if (!inList)
                     {
                         cout << "No courses in Priority Queue" << endl;
+                        cout << endl;
                     }
                 }
                 else
@@ -466,6 +467,7 @@ public:
                     if (!inList)
                     {
                         cout << "No courses in waitlist" << endl;
+                        cout << endl;
                     }
                 }
 
@@ -574,7 +576,7 @@ public:
         }
     }
 
-    void StudentScreen(Student student)
+    void StudentScreen(Student& student)
     {
         // Display the student screen with options
         int choice;
@@ -615,7 +617,6 @@ public:
 
     void MainMenu()
     {
-        prefileLoad();
         // Display the main menu with options
         int choice;
         while (true)

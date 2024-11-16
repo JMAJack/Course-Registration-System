@@ -23,8 +23,8 @@ public:
         : course(course), enrolledStudents(enrolled), waitlist(wait), priorityQueue(priority) {}
 
     // Accessors
-    Course GetCourse() const { return course; }
-    LinkedList<Student> GetEnrolledStudents() const { return enrolledStudents; }
+    Course& GetCourse() { return course; }
+    LinkedList<Student>& GetEnrolledStudents() { return enrolledStudents; }
     queue<Student> GetWaitlist() const { return waitlist; }
     queue<Student> GetPriorityQueue() const { return priorityQueue; }
 

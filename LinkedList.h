@@ -75,7 +75,7 @@ public:
     }
 
     // Search for a node based on type T
-    T *Search(T& data)
+    T *Search(const T& data)
     {
         Node<T> *curr = head;
         while (curr != nullptr)
@@ -116,8 +116,7 @@ public:
     // Special case: deleting the head node
     if (head->GetData() == data) {
         head = head->GetNext(); // Move head to the next node
-        curr->SetData(T());     // Set data to default value
-        curr->SetNext(nullptr);      // Set curr to null
+        delete curr;
         return;
     }
 
