@@ -75,7 +75,22 @@ public:
         return Course();
     }
 
-    Course FindCourse(Student &student, string courseCode)
+    Course *FindCoursePtr(string courseCode)
+    {
+        // Find a course by code
+        Node<Course> *curr = courseList.GetHead();
+        while (curr != nullptr)
+        {
+            if (curr->GetData().GetCode() == courseCode)
+            {
+                return &curr->GetData();
+            }
+            curr = curr->GetNext();
+        }
+        return nullptr;
+    }
+
+    Course FindEnrolledCourse(Student &student, string courseCode)
     {
         // Find a course by code in a student's enrolled courses
         Node<Course> *curr = student.GetEnrolledCourses().GetHead();
@@ -90,7 +105,7 @@ public:
         return Course();
     }
 
-    StudentTracker FindStudentTracker(Course &course)
+    StudentTracker FindStudentTracker(const Course &course)
     {
         // Find a student tracker by course
         Node<StudentTracker> *curr = studentTrackerList.GetHead();
@@ -173,36 +188,6 @@ public:
             Pause();
             return Student();
         }
-    }
-
-    void prefileLoad()
-    {
-        // Preload some data into the system
-        Course *prerequisites[2] = {nullptr, nullptr};
-        Course course1("CS101", "Introduction to Computer Science", 3, 30, prerequisites);
-        Course course2("CS102", "Data Structures", 3, 30, prerequisites);
-
-        LinkedList<Course> courseList;
-        courseList.Insert(course1);
-        courseList.Insert(course2);
-
-        Student student1(1, "John Doe", 3.5, courseList);
-        Student student2(2, "Jane Smith", 3.0, courseList);
-
-        LinkedList<Student> studentList;
-        studentList.Insert(student1);
-        studentList.Insert(student2);
-
-        StudentTracker tracker1(course1, studentList, queue<Student>(), queue<Student>());
-        StudentTracker tracker2(course2, studentList, queue<Student>(), queue<Student>());
-
-        LinkedList<StudentTracker> studentTrackerList;
-        studentTrackerList.Insert(tracker1);
-        studentTrackerList.Insert(tracker2);
-
-        fileManager.SaveStudents(studentList, "students.dat");
-        fileManager.SaveCourses(courseList, "courses.dat");
-        fileManager.SaveStudentTrackers(studentTrackerList, "student_trackers.dat");
     }
 
     // Course Registration functions
@@ -312,7 +297,7 @@ public:
                 string courseCode;
                 cin >> courseCode;
 
-                Course course = FindCourse(student, courseCode);
+                Course course = FindEnrolledCourse(student, courseCode);
                 if (course.GetCode() != "")
                 {
                     cout << FormatError("Course already enrolled.") << endl
@@ -335,8 +320,21 @@ public:
                         // Add the student to the student tracker
                         StudentTracker tracker = FindStudentTracker(course);
                         tracker.AddStudent(student);
-                        cout << FormatCorrect("Course enrolled successfully.") << endl;
-                        Pause();
+
+                        if (tracker.GetEnrolledStudents().Search(student) == nullptr)
+                        {
+                            // If student is not in the enrolled students list, display error message
+                            // This could be for if they dont meet the prerequisites
+                            cout << FormatError("Course Enrollment Failed") << endl;
+                            Pause();
+                        }
+                        else
+                        {
+                            // Update tracker in StudentTrackerList
+                            studentTrackerList.EditNode(FindStudentTracker(course), tracker);
+                            cout << FormatCorrect("Course enrolled successfully.") << endl;
+                            Pause();
+                        }
                     }
                 }
             }
@@ -349,7 +347,7 @@ public:
                     addStack.pop();
 
                     // Check to see if the student was already removed from course
-                    if (FindCourse(student, course.GetCode()).GetCode() == "")
+                    if (FindEnrolledCourse(student, course.GetCode()).GetCode() == "")
                     {
                         cout << FormatError("Student is already not enrolled in this course.") << endl;
                         Pause();
@@ -359,6 +357,7 @@ public:
                     {
                         StudentTracker tracker = FindStudentTracker(course);
                         tracker.RemoveStudent(student);
+                        studentTrackerList.EditNode(FindStudentTracker(course), tracker);
                         cout << FormatCorrect("Last enrollment undone.") << endl;
                         Pause();
                     }
@@ -482,6 +481,7 @@ public:
                     {
                         dropStack.push(course);
                         tracker.RemoveStudent(student);
+                        studentTrackerList.EditNode(FindStudentTracker(course), tracker);
                         cout << FormatCorrect("Student removed from priority queue.") << endl;
                         Pause();
                         break;
@@ -490,6 +490,7 @@ public:
                     {
                         dropStack.push(course);
                         tracker.RemoveStudent(student);
+                        studentTrackerList.EditNode(FindStudentTracker(course), tracker);
                         cout << FormatCorrect("Student removed from waitlist.") << endl;
                         Pause();
                         break;
@@ -497,7 +498,7 @@ public:
                 }
 
                 // Check if the course is in the student's enrolled courses
-                Course course = FindCourse(student, courseCode);
+                Course course = FindEnrolledCourse(student, courseCode);
                 if (course.GetCode() == "")
                 {
                     cout << FormatError("Course not found in enrolled courses.") << endl;
@@ -511,6 +512,7 @@ public:
                     // Remove the student from the student tracker
                     StudentTracker tracker = FindStudentTracker(course);
                     tracker.RemoveStudent(student);
+                    studentTrackerList.EditNode(FindStudentTracker(course), tracker);
                     cout << FormatCorrect("Course dropped successfully.") << endl;
                     Pause();
                 }
@@ -524,7 +526,7 @@ public:
                     dropStack.pop();
 
                     // Check to see if the student is already in course before adding back
-                    if (FindCourse(student, course.GetCode()).GetCode() != "")
+                    if (FindEnrolledCourse(student, course.GetCode()).GetCode() != "")
                     {
                         cout << FormatError("Student is already enrolled in this course.") << endl;
                         Pause();
@@ -536,8 +538,21 @@ public:
                         // Add the student back to the student tracker
                         StudentTracker tracker = FindStudentTracker(course);
                         tracker.AddStudent(student);
-                        cout << FormatCorrect("Last drop undone.") << endl;
-                        Pause();
+
+                        if (tracker.GetEnrolledStudents().Search(student) == nullptr)
+                        {
+                            // If student is not in the enrolled students list, display error message
+                            // This could be for if they dont meet the prerequisites
+                            cout << FormatError("Course Enrollment Failed") << endl;
+                            Pause();
+                        }
+                        else
+                        {
+                            // Update tracker in StudentTrackerList
+                            studentTrackerList.EditNode(FindStudentTracker(course), tracker);
+                            cout << FormatCorrect("Last drop undone.") << endl;
+                            Pause();
+                        }
                     }
                 }
                 else
@@ -822,19 +837,19 @@ public:
                 string prereqCode;
                 for (int i = 0; i < 2; i++)
                 {
-                    cout << "Enter prerequisite course code " << i + 1 << " (or Enter 'None'): ";
+                    cout << "Enter prerequisite course code " << i + 1 << ". (or Enter 'None'): ";
                     cin >> prereqCode;
                     if (prereqCode != "None")
                     {
-                        Course prereq = FindCourse(prereqCode);
-                        if (prereq.GetCode() == "")
+                        Course *prereq = FindCoursePtr(prereqCode);
+                        if (prereq == nullptr || prereq->GetCode() == code)
                         {
-                            cout << FormatError("Prerequisite course not found.") << endl;
+                            cout << FormatError("Prerequisite course not valid or found.") << endl;
                             i--;
                         }
                         else
                         {
-                            prerequisites[i] = &prereq;
+                            prerequisites[i] = prereq;
                         }
                     }
                     else
@@ -858,6 +873,8 @@ public:
                 else
                 {
                     courseList.Insert(course);
+                    StudentTracker tracker(course, LinkedList<Student>(), queue<Student>(), queue<Student>());
+                    studentTrackerList.Insert(tracker);
                     cout << FormatCorrect("Course added successfully.") << endl;
                 }
 
@@ -893,9 +910,11 @@ public:
                     {
                         Student student = tracker.GetEnrolledStudents().GetNode(i)->GetData();
                         student.GetEnrolledCourses().Remove(course);
+                        studentList.EditNode(FindStudent(student.GetId()), student);
                     }
 
                     courseList.Remove(course);
+                    studentTrackerList.Remove(tracker);
                     cout << FormatCorrect("Course removed successfully.") << endl;
                 }
                 Pause();
@@ -949,19 +968,19 @@ public:
                         string prereqCode;
                         for (int i = 0; i < 2; i++)
                         {
-                            cout << "Enter prerequisite course code " << i + 1 << " (or Enter 'None'): ";
+                            cout << "Enter new or current prerequisite course code " << i + 1 << ". (or Enter 'None'): ";
                             cin >> prereqCode;
                             if (prereqCode != "None")
                             {
-                                Course prereq = FindCourse(prereqCode);
-                                if (prereq.GetCode() == "")
+                                Course *prereq = FindCoursePtr(prereqCode);
+                                if (prereq == nullptr || prereq->GetCode() == code)
                                 {
-                                    cout << FormatError("Prerequisite course not found.") << endl;
+                                    cout << FormatError("Prerequisite course not valid or found.") << endl;
                                     i--;
                                 }
                                 else
                                 {
-                                    prerequisites[i] = &prereq;
+                                    prerequisites[i] = prereq;
                                 }
                             }
                             else
@@ -980,10 +999,13 @@ public:
                         tracker.SetCourse(course);
                         for (int i = 0; i < tracker.GetEnrolledStudents().Size(); i++)
                         {
-                            tracker.GetEnrolledStudents().GetNode(i)->GetData().GetEnrolledCourses().EditNode(check, course);
+                            Student student = tracker.GetEnrolledStudents().GetNode(i)->GetData();
+                            student.GetEnrolledCourses().EditNode(check, course);
+                            studentList.EditNode(FindStudent(student.GetId()), student);
                         }
 
                         courseList.EditNode(check, course);
+                        studentTrackerList.EditNode(FindStudentTracker(check), tracker);
 
                         cout << FormatCorrect("Course modified successfully.") << endl;
                     }
@@ -1077,7 +1099,7 @@ public:
                 {
                     StudentTracker tracker = FindStudentTracker(course);
                     cout << endl;
-                    cout << "Enrolled Students:" << endl;
+                    cout << "Enrolled Students (" << tracker.GetEnrolledStudents().Size() << "): " << endl;
                     for (int i = 0; i < tracker.GetEnrolledStudents().Size(); i++)
                     {
                         Student student = tracker.GetEnrolledStudents().GetNode(i)->GetData();
@@ -1085,25 +1107,7 @@ public:
                     }
 
                     cout << endl;
-                    cout << "Waitlist:" << endl;
-                    if (tracker.GetWaitlist().empty())
-                    {
-                        cout << "No students in waitlist" << endl;
-                    }
-                    else
-                    {
-                        for (int i = 0; i < tracker.GetWaitlist().size(); i++)
-                        {
-                            Student student = tracker.GetWaitlist().front();
-                            cout << "ID " << student.GetId() << ": " << student.GetName() << endl;
-                            tracker.GetWaitlist().pop();
-                            tracker.GetWaitlist().push(student);
-                            cout << endl;
-                        }
-                    }
-
-                    cout << endl;  
-                    cout << "Priority Queue:" << endl;
+                    cout << "Priority Queue (" << tracker.GetPriorityQueue().size() << "):" << endl;
                     if (tracker.GetPriorityQueue().empty())
                     {
                         cout << "No students in priority queue" << endl;
@@ -1116,6 +1120,24 @@ public:
                             cout << "ID " << student.GetId() << ": " << student.GetName() << endl;
                             tracker.GetPriorityQueue().pop();
                             tracker.GetPriorityQueue().push(student);
+                            cout << endl;
+                        }
+                    }
+
+                    cout << endl;
+                    cout << "Waitlist (" << tracker.GetWaitlist().size() << "):" << endl;
+                    if (tracker.GetWaitlist().empty())
+                    {
+                        cout << "No students in waitlist" << endl;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < tracker.GetWaitlist().size(); i++)
+                        {
+                            Student student = tracker.GetWaitlist().front();
+                            cout << "ID " << student.GetId() << ": " << student.GetName() << endl;
+                            tracker.GetWaitlist().pop();
+                            tracker.GetWaitlist().push(student);
                             cout << endl;
                         }
                     }
@@ -1226,6 +1248,7 @@ public:
 
 int main()
 {
+
     CourseRegistrationSystem system;
     system.MainMenu();
     return 0;

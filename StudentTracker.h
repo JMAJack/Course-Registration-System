@@ -41,6 +41,10 @@ public:
         cout << "Waitlist: " << waitlist.size() << endl;
         cout << "Priority Queue: " << priorityQueue.size() << endl;
     }
+
+    bool operator==(const StudentTracker& other) const {
+        return course == other.course;
+    }
     
 
     // Serialize the StudentTracker data to a binary file
@@ -109,16 +113,23 @@ public:
     }
 
     // ADDITIONAL FUNCTIONS
-    void AddStudent(Student student) {
+    bool PrerequisitesMet(Student& student) {
+        for (int i = 0; i < 2; i++) {
+            if (course.GetPrerequisites(i) != nullptr) {
+                if (student.GetEnrolledCourses().Search(*course.GetPrerequisites(i)) == nullptr) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    void AddStudent(Student& student) {
         if (enrolledStudents.Size() < course.GetMaxCapacity()) {
             // check if student meets prerequisites
-            for (int i = 0; i < 2; i++) {
-                if (course.GetPrerequisites(i) != nullptr) {
-                    if (student.GetEnrolledCourses().Search(*course.GetPrerequisites(i)) == nullptr) {
-                        cout << "Student " << student.GetName() << " does not meet prerequisites for " << course.GetTitle() << endl;
-                        return;
-                    }
-                }
+            if (!PrerequisitesMet(student)) {
+                cout << "Student " << student.GetName() << " does not meet prerequisites for " << course.GetCode()<< ": "<< course.GetTitle() << endl;
+                return;
             }
             student.GetEnrolledCourses().Insert(course);
             enrolledStudents.Insert(student);
