@@ -35,6 +35,7 @@ public:
         studentList = fileManager.LoadStudents("students.dat");
         courseList = fileManager.LoadCourses("courses.dat");
         studentTrackerList = fileManager.LoadStudentTrackers("student_trackers.dat");
+        Pause();
     }
 
     void SaveData()

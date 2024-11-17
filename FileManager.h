@@ -11,6 +11,31 @@ using namespace std;
 
 class FileManager {
 public:
+    FileManager() {
+        //Checks if files exist, if not creates them
+        ifstream studentFile("students.dat");
+        if (!studentFile.good()) {
+            ofstream studentFile("students.dat");
+            cout << "Student file created." << endl;
+            studentFile.close();
+        }
+
+        ifstream courseFile("courses.dat");
+        if (!courseFile.good()) {
+            ofstream courseFile("courses.dat");
+            cout << "Course file created." << endl;
+            courseFile.close();
+        }
+
+        ifstream studentTrackerFile("student_trackers.dat");
+        if (!studentTrackerFile.good()) {
+            ofstream studentTrackerFile("student_trackers.dat");
+            cout << "StudentTracker file created." << endl;
+            studentTrackerFile.close();
+        }
+    }
+
+
     // Save Students to a binary file
     static void SaveStudents(const LinkedList<Student>& studentList, const string& filename) {
         ofstream outFile(filename, ios::binary);
