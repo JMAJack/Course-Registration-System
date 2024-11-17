@@ -141,6 +141,81 @@ public:
         return "\033[32m" + message + "\033[0m"; // 32 is the ANSI code for green text
     }
 
+    int GetValidInteger(string prompt)
+    {
+        int input;
+        while (true)
+        {
+            string rawInput;
+            cin >> rawInput; // Read input as a string to validate it manually.
+
+            // Check if the input is a positive integer.
+            bool isValid = true;
+            for (char c : rawInput)
+            {
+                if (!isdigit(c)) // Ensure all characters are digits.
+                {
+                    isValid = false;
+                    break;
+                }
+            }
+
+            if (isValid)
+            {
+                try
+                {
+                    // Convert the input to an integer and ensure it's positive.
+                    input = stoi(rawInput);
+                    if (input > 0)
+                    {
+                        return input;
+                    }
+                    else
+                    {
+                        isValid = false;
+                    }
+                }
+                catch (const exception &e)
+                {
+                    isValid = false; // Handle overflow or invalid conversion.
+                }
+            }
+
+            // Handle invalid input.
+            cout << endl;
+            cout << FormatError("Invalid input. Please enter a valid positive integer.") << endl;
+            cout << prompt;
+
+            // Clear the input buffer in case of invalid raw input.
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
+    float GetValidFloat(string prompt)
+    {
+        float input;
+        while (true)
+        {
+            cin >> input;
+
+            // Check if the input failed
+            if (cin.fail() || input < 0)
+            {
+                cin.clear();                                         // Clear the failbit
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+                cout << endl;
+                cout << FormatError("Invalid input. Please enter a valid positive float") << endl;
+                cout << prompt;
+            }
+            else
+            {
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear any leftover input
+                return input;                                        // Valid input
+            }
+        }
+    }
+
     // Authentication functions
     bool AuthenticateAdmin()
     {
@@ -172,7 +247,7 @@ public:
 
         cout << "Enter your student ID: ";
         int studentId;
-        cin >> studentId;
+        studentId = GetValidInteger("Enter your student ID: ");
 
         // Check if student ID exists in the student list
         Student student = FindStudent(studentId);
@@ -276,7 +351,7 @@ public:
             cout << "2. Undo last enrollment" << endl;
             cout << "3. Go Back" << endl;
             cout << "Enter your choice: ";
-            cin >> choice;
+            choice = GetValidInteger("Enter your choice: ");
             cout << endl;
 
             switch (choice)
@@ -395,7 +470,7 @@ public:
             cout << "2. Undo last drop" << endl;
             cout << "3. Go Back" << endl;
             cout << "Enter your choice: ";
-            cin >> choice;
+            choice = GetValidInteger("Enter your choice: ");
             cout << endl;
 
             switch (choice)
@@ -587,7 +662,7 @@ public:
             cout << "3. View Student Data" << endl;
             cout << "4. Go Back" << endl;
             cout << "Enter your choice: ";
-            cin >> choice;
+            choice = GetValidInteger("Enter your choice: ");
             cout << endl;
 
             switch (choice)
@@ -628,7 +703,7 @@ public:
             cout << "3. Modify Student" << endl;
             cout << "4. Go Back" << endl;
             cout << "Enter your choice: ";
-            cin >> choice;
+            choice = GetValidInteger("Enter your choice: ");
 
             switch (choice)
             {
@@ -638,7 +713,7 @@ public:
                 Student student;
                 cout << "Enter student ID: ";
                 int id;
-                cin >> id;
+                id = GetValidInteger("Enter student ID: ");
 
                 cout << "Enter student name: ";
                 string name;
@@ -647,7 +722,7 @@ public:
 
                 cout << "Enter student GPA: ";
                 float gpa;
-                cin >> gpa;
+                gpa = GetValidFloat("Enter student GPA: ");
 
                 student.SetId(id);
                 student.SetName(name);
@@ -683,7 +758,7 @@ public:
                 cout << endl;
                 cout << "Enter student ID of the student you would like to remove: ";
                 int id;
-                cin >> id;
+                id = GetValidInteger("Enter student ID of the student you would like to remove: ");
 
                 Student student = FindStudent(id);
                 if (student.GetId() == 0)
@@ -722,7 +797,7 @@ public:
                 cout << endl;
                 cout << "Enter the student ID of the student you would like to modify: ";
                 int id;
-                cin >> id;
+                id = GetValidInteger("Enter the student ID of the student you would like to modify: ");
 
                 Student check = FindStudent(id);
                 if (check.GetId() == 0)
@@ -735,7 +810,7 @@ public:
                     // Ask for new student details and modify student
                     cout << "Enter new or current student id: ";
                     int newId;
-                    cin >> newId;
+                    newId = GetValidInteger("Enter new or current student id: ");
                     Student temp = FindStudent(newId);
                     // Check if the new ID is unique or the current ID of the student being modified
                     if (temp == check || temp.GetId() == 0)
@@ -746,7 +821,7 @@ public:
                         getline(cin, name);
                         cout << "Enter new or current student GPA: ";
                         float gpa;
-                        cin >> gpa;
+                        gpa = GetValidFloat("Enter new or current student GPA: ");
                         student.SetId(newId);
                         student.SetName(name);
                         student.SetGPA(gpa);
@@ -807,7 +882,7 @@ public:
             cout << "3. Modify Course" << endl;
             cout << "4. Go Back" << endl;
             cout << "Enter your choice: ";
-            cin >> choice;
+            choice = GetValidInteger("Enter your choice: ");
 
             switch (choice)
             {
@@ -826,11 +901,11 @@ public:
 
                 cout << "Enter course credits: ";
                 int credits;
-                cin >> credits;
+                credits = GetValidInteger("Enter course credits: ");
 
                 cout << "Enter course max capacity: ";
                 int maxCapacity;
-                cin >> maxCapacity;
+                maxCapacity = GetValidInteger("Enter course max capacity: ");
 
                 // Enter prerequisites if any
                 Course *prerequisites[2] = {nullptr, nullptr};
@@ -958,10 +1033,10 @@ public:
                         getline(cin, title);
                         cout << "Enter new or current course credits: ";
                         int credits;
-                        cin >> credits;
+                        credits = GetValidInteger("Enter new or current course credits: ");
                         cout << "Enter new or current course max capacity: ";
                         int maxCapacity;
-                        cin >> maxCapacity;
+                        maxCapacity = GetValidInteger("Enter new or current course max capacity: ");
 
                         // Enter prerequisites if any
                         Course *prerequisites[2] = {nullptr, nullptr};
@@ -1046,7 +1121,7 @@ public:
             cout << "3. View All Students in a Course" << endl;
             cout << "4. Go Back" << endl;
             cout << "Enter your choice: ";
-            cin >> choice;
+            choice = GetValidInteger("Enter your choice: ");
 
             switch (choice)
             {
@@ -1177,7 +1252,7 @@ public:
             cout << "3. View Database" << endl;
             cout << "4. Go Back" << endl;
             cout << "Enter your choice: ";
-            cin >> choice;
+            choice = GetValidInteger("Enter your choice: ");
 
             switch (choice)
             {
@@ -1213,7 +1288,7 @@ public:
             cout << "2. Login as admin" << endl;
             cout << "3. Exit" << endl;
             cout << "Enter your choice: ";
-            cin >> choice;
+            choice = GetValidInteger("Enter your choice: ");
             cout << endl;
             switch (choice)
             {
