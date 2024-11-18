@@ -395,9 +395,30 @@ public:
 
                         // Add the student to the student tracker
                         StudentTracker tracker = FindStudentTracker(course);
+
+                        if (tracker.GetEnrolledStudents().Search(student) != nullptr)
+                        {
+                            cout << FormatError("Student is already enrolled in Course") << endl;
+                            Pause();
+                            break;
+                        }
+                        else if (tracker.IsInPriorityQueue(student))
+                        {
+                            cout << FormatError("Student is already in the priority queue for this course.") << endl;
+                            Pause();
+                            break;
+                        }
+                        else if (tracker.IsInWaitlist(student))
+                        {
+                            cout << FormatError("Student is already in the waitlist for this course.") << endl;
+                            Pause();
+                            break;
+                        }
+
                         tracker.AddStudent(student);
 
-                        if (tracker.GetEnrolledStudents().Search(student) == nullptr)
+
+                        if (tracker.GetEnrolledStudents().Search(student) == nullptr && !tracker.IsInPriorityQueue(student) && !tracker.IsInWaitlist(student))
                         {
                             // If student is not in the enrolled students list, display error message
                             // This could be for if they dont meet the prerequisites
@@ -408,6 +429,7 @@ public:
                         {
                             // Update tracker in StudentTrackerList
                             studentTrackerList.EditNode(FindStudentTracker(course), tracker);
+                            studentList.EditNode(FindStudent(student.GetId()), student);
                             cout << FormatCorrect("Course enrolled successfully.") << endl;
                             Pause();
                         }
@@ -422,27 +444,49 @@ public:
                     Course course = addStack.top();
                     addStack.pop();
 
-                    // Check to see if the student was already removed from course
-                    if (FindEnrolledCourse(student, course.GetCode()).GetCode() == "")
+                    // Check if the student is already in the course
+                    StudentTracker tracker = FindStudentTracker(course);
+
+                    // Check if the student is in the priority queue or waitlist
+                    if (tracker.IsInPriorityQueue(student))
                     {
-                        cout << FormatError("Student is already not enrolled in this course.") << endl;
+                        tracker.RemoveStudent(student);
+                        studentTrackerList.EditNode(FindStudentTracker(course), tracker);
+                        cout << FormatCorrect("Student removed from priority queue.") << endl;
+                        cout << FormatCorrect("Last enrollment undone.") << endl;
                         Pause();
                         break;
                     }
-                    else
+                    else if (tracker.IsInWaitlist(student))
                     {
-                        StudentTracker tracker = FindStudentTracker(course);
                         tracker.RemoveStudent(student);
                         studentTrackerList.EditNode(FindStudentTracker(course), tracker);
+                        cout << FormatCorrect("Student removed from waitlist.") << endl;
                         cout << FormatCorrect("Last enrollment undone.") << endl;
+                        Pause();
+                        break;
+                    }
+                    // Check if the student is already in course before dropping
+                    else if (FindEnrolledCourse(student, course.GetCode()).GetCode() == "")
+                    {
+                        cout << FormatError("Course not found in enrolled courses.") << endl;
+                        Pause();
+                    }
+                    else
+                    {
+                        tracker.RemoveStudent(student);
+                        studentTrackerList.EditNode(FindStudentTracker(course), tracker);
+                        studentList.EditNode(FindStudent(student.GetId()), student);
+                        cout << FormatCorrect("Last enrollment undone") << endl;
                         Pause();
                     }
                 }
                 else
                 {
-                    cout << FormatError("No courses have been enrolled in the current session.") << endl;
+                    cout << FormatError("No courses have been added in the current session.") << endl;
                     Pause();
                 }
+
                 break;
 
             case 3:
@@ -482,9 +526,7 @@ public:
                 cout << "Enrolled Courses:" << endl;
                 if (student.GetEnrolledCourses().IsEmpty())
                 {
-                    cout << "No courses enrolled" << endl;
-                    Pause();
-                    break;
+                    cout << "No courses enrolled" << endl << endl;
                 }
                 else
                 {
@@ -543,17 +585,31 @@ public:
                     }
                 }
 
+                if (student.GetEnrolledCourses().IsEmpty()&& !inList)
+                {
+                    Pause();
+                    break;
+                }
+
                 // Ask the student to enter the course code
                 cout << "Enter the course code to drop: ";
                 string courseCode;
                 cin >> courseCode;
 
-                // Check if the student is in the priority queue or waitlist for course then remove them there
-                for (int i = 0; i < courseList.Size(); i++)
+                Course course = FindCourse(courseCode);
+                // Check if the course exists in the course list
+                if (course.GetCode() == "")
                 {
-                    Course course = courseList.GetNode(i)->GetData();
+                    cout << FormatError("Course not found.") << endl;
+                    Pause();
+                }
+                // Check if the student is already in the course
+                else
+                {
                     StudentTracker tracker = FindStudentTracker(course);
-                    if (tracker.IsInPriorityQueue(student) && course.GetCode() == courseCode)
+
+                    // Check if the student is in the priority queue or waitlist
+                    if (tracker.IsInPriorityQueue(student))
                     {
                         dropStack.push(course);
                         tracker.RemoveStudent(student);
@@ -562,7 +618,7 @@ public:
                         Pause();
                         break;
                     }
-                    else if (tracker.IsInWaitlist(student) && course.GetCode() == courseCode)
+                    else if (tracker.IsInWaitlist(student))
                     {
                         dropStack.push(course);
                         tracker.RemoveStudent(student);
@@ -571,29 +627,25 @@ public:
                         Pause();
                         break;
                     }
-                }
 
-                // Check if the course is in the student's enrolled courses
-                Course course = FindEnrolledCourse(student, courseCode);
-                if (course.GetCode() == "")
-                {
-                    cout << FormatError("Course not found in enrolled courses.") << endl;
-                    Pause();
+                    // Check if the student is already in course before dropping
+                    else if (FindEnrolledCourse(student, courseCode).GetCode() == "")
+                    {
+                        cout << FormatError("Course not found in enrolled courses.") << endl;
+                        Pause();
+                    }
+                    else
+                    {
+                        dropStack.push(course);
+                        tracker.RemoveStudent(student);
+                        studentTrackerList.EditNode(FindStudentTracker(course), tracker);
+                        studentList.EditNode(FindStudent(student.GetId()), student);
+                        cout << FormatCorrect("Course dropped successfully.") << endl;
+                        Pause();
+                    }
                 }
-                else
-                {
-                    // Add the course to the drop stack
-                    dropStack.push(course);
-
-                    // Remove the student from the student tracker
-                    StudentTracker tracker = FindStudentTracker(course);
-                    tracker.RemoveStudent(student);
-                    studentTrackerList.EditNode(FindStudentTracker(course), tracker);
-                    cout << FormatCorrect("Course dropped successfully.") << endl;
-                    Pause();
-                }
+                break;
             }
-            break;
 
             case 2:
                 if (!dropStack.empty())
@@ -613,9 +665,29 @@ public:
 
                         // Add the student back to the student tracker
                         StudentTracker tracker = FindStudentTracker(course);
+
+                         if (tracker.GetEnrolledStudents().Search(student) != nullptr)
+                        {
+                            cout << FormatError("Student is already enrolled in Course") << endl;
+                            Pause();
+                            break;
+                        }
+                        else if (tracker.IsInPriorityQueue(student))
+                        {
+                            cout << FormatError("Student is already in the priority queue for this course.") << endl;
+                            Pause();
+                            break;
+                        }
+                        else if (tracker.IsInWaitlist(student))
+                        {
+                            cout << FormatError("Student is already in the waitlist for this course.") << endl;
+                            Pause();
+                            break;
+                        }
+
                         tracker.AddStudent(student);
 
-                        if (tracker.GetEnrolledStudents().Search(student) == nullptr)
+                        if (tracker.GetEnrolledStudents().Search(student) == nullptr && !tracker.IsInPriorityQueue(student) && !tracker.IsInWaitlist(student))
                         {
                             // If student is not in the enrolled students list, display error message
                             // This could be for if they dont meet the prerequisites
@@ -626,6 +698,7 @@ public:
                         {
                             // Update tracker in StudentTrackerList
                             studentTrackerList.EditNode(FindStudentTracker(course), tracker);
+                            studentList.EditNode(FindStudent(student.GetId()), student);
                             cout << FormatCorrect("Last drop undone.") << endl;
                             Pause();
                         }
@@ -832,15 +905,23 @@ public:
                         {
                             Course course = courseList.GetNode(i)->GetData();
                             StudentTracker tracker = FindStudentTracker(course);
-                            if (tracker.IsInPriorityQueue(check))
+
+                            if (tracker.GetEnrolledStudents().Search(check) != nullptr)
+                            {
+                                tracker.GetEnrolledStudents().EditNode(*tracker.GetEnrolledStudents().Search(check), student);
+                                studentTrackerList.EditNode(FindStudentTracker(course), tracker);
+                            }
+                            else if (tracker.IsInPriorityQueue(check))
                             {
                                 tracker.RemoveStudent(check);
                                 tracker.AddStudent(student);
+                                studentTrackerList.EditNode(FindStudentTracker(course), tracker);
                             }
                             else if (tracker.IsInWaitlist(check))
                             {
                                 tracker.RemoveStudent(check);
                                 tracker.AddStudent(student);
+                                studentTrackerList.EditNode(FindStudentTracker(course), tracker);
                             }
                         }
 
