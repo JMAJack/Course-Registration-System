@@ -418,7 +418,7 @@ public:
                         tracker.AddStudent(student);
 
 
-                        if (tracker.GetEnrolledStudents().Search(student) == nullptr && !tracker.IsInPriorityQueue(student) && !tracker.IsInWaitlist(student))
+                        if (!tracker.PrerequisitesMet(student))
                         {
                             // If student is not in the enrolled students list, display error message
                             // This could be for if they dont meet the prerequisites
@@ -687,7 +687,7 @@ public:
 
                         tracker.AddStudent(student);
 
-                        if (tracker.GetEnrolledStudents().Search(student) == nullptr && !tracker.IsInPriorityQueue(student) && !tracker.IsInWaitlist(student))
+                        if (!tracker.PrerequisitesMet(student))
                         {
                             // If student is not in the enrolled students list, display error message
                             // This could be for if they dont meet the prerequisites
@@ -1209,7 +1209,7 @@ public:
             {
             case 1:
                 cout << endl;
-                cout << "Courses:" << endl;
+                cout << "Courses (" << courseList.Size() << "):" << endl;
                 for (int i = 0; i < courseList.Size(); i++)
                 {
                     Course course = courseList.GetNode(i)->GetData();
@@ -1221,7 +1221,7 @@ public:
 
             case 2:
                 cout << endl;
-                cout << "Students:" << endl;
+                cout << "Students (" << studentList.Size() << "):" << endl;
                 for (int i = 0; i < studentList.Size(); i++)
                 {
                     Student student = studentList.GetNode(i)->GetData();
@@ -1329,9 +1329,9 @@ public:
             system("cls");
 
             cout << "\tWelcome to the Admin Panel!" << endl;
-            cout << "1. View Student Management" << endl;
-            cout << "2. View Course Management" << endl;
-            cout << "3. View Database" << endl;
+            cout << "1. Student Management" << endl;
+            cout << "2. Course Management" << endl;
+            cout << "3. Database" << endl;
             cout << "4. Go Back" << endl;
             cout << "Enter your choice: ";
             choice = GetValidInteger("Enter your choice: ");
