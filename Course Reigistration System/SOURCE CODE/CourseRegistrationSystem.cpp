@@ -1,3 +1,9 @@
+// Joel Henry
+// Diandra Robinson
+// Javaine Robinson
+// Areeba Zafar
+// Jon Marc Jackson
+
 #include <iostream>
 #include <fstream>
 #include <stack>

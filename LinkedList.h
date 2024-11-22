@@ -1,3 +1,5 @@
+//Joel Henry
+
 // LinkedList Class Template
 #ifndef LinkedList_H
 #define LinkedList_H

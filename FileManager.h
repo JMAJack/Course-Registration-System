@@ -1,3 +1,6 @@
+// Joel Henry
+// Areeba Zafar
+
 #ifndef FILEMANAGER_H
 #define FILEMANAGER_H
 

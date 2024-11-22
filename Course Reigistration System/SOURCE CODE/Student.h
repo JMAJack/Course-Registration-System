@@ -1,3 +1,6 @@
+// Joel Henry
+// Javaine Robinson
+
 #ifndef STUDENT_H
 #define STUDENT_H
 

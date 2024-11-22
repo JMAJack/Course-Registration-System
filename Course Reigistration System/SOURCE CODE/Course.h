@@ -1,3 +1,6 @@
+// Joel Henry
+// Diandra Robinson
+
 #ifndef COURSE_H
 #define COURSE_H
 

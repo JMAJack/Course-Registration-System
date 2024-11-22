@@ -1,3 +1,6 @@
+// Joel Henry
+// Diandra Robinson
+
 #ifndef STUDENTTRACKER_H
 #define STUDENTTRACKER_H
 

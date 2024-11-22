@@ -1,6 +1,4 @@
 // Joel Henry
-// 2300087
-// 10/20/2024
 
 #ifndef Node_H
 #define Node_H
