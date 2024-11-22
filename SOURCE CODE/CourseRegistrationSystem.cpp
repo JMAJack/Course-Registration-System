@@ -731,8 +731,8 @@ public:
         {
             system("cls");
             cout << "\tWelcome to the Course Registration System " << student.GetName() << endl;
-            cout << "1. Enroll in a course" << endl;
-            cout << "2. Drop a course" << endl;
+            cout << "1. Course Enrollment" << endl;
+            cout << "2. Course Removal" << endl;
             cout << "3. View Student Data" << endl;
             cout << "4. Go Back" << endl;
             cout << "Enter your choice: ";
