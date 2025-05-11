@@ -5,7 +5,7 @@ This repository contains a group project for a CLI Course Management application
 
 [User Manual](https://github.com/JMAJack/Course-Registration-System/blob/main/Course%20Registration%20System%20User%20Manual.pdf)
 
-[Application and Source Code Download]() 
+[Application and Source Code Download](https://github.com/JMAJack/Course-Registration-System/releases/tag/v1.0.0) 
 
 # Table of Contents
 - [Introduction](#introduction) 
