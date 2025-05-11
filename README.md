@@ -1,5 +1,5 @@
 # Course Registration System
-This repository contains a group project for a CLI Course Management application for a Data Structures module in 2025.
+This repository contains a group project for a CLI Course Registration Management System for a Data Structures module in 2025.
 
 [Project Description and Rules](https://github.com/JMAJack/Course-Registration-System/blob/main/Data%20Structures%20sem1_2024-25%20Project.pdf)
 
