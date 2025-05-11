@@ -7,7 +7,7 @@ This repository contains a group project for a CLI Course Management application
 
 [Application and Source Code Download](https://github.com/JMAJack/Course-Registration-System/releases/tag/v1.0.0) 
 
-# Table of Contents
+## Table of Contents
 - [Introduction](#introduction) 
 - [Traversing between Menu and Information Screens](#traversing-between-menu-and-information-screens) 
 - [Startup Process](#startup-process)
